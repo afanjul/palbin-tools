@@ -1,0 +1,33 @@
+.gridPreview {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.controls label {
+  display: flex;
+  align-items: center;
+}
+
+.controls input[type="range"] {
+  margin: 0 10px;
+}
+
+.canvasContainer {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid #ccc;
+}
+
