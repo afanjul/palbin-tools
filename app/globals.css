@@ -1,3 +1,5 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -40,7 +42,17 @@ body {
 }
 
 .hover-shadow:hover {
-  transform: translateY(-5px);
+  transform: translateY(-2px);
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+  transition: all .2s ease-in-out;
+}
+
+.hover-card {
+  transition: all .2s ease-in-out;
+}
+
+.hover-card:hover {
+  transform: translateY(-2px);
   box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
 }
 
