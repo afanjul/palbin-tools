@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import JSZip from 'jszip'
-import FileSaver from 'file-saver'
+import { saveAs } from 'file-saver'
 import styles from './DownloadButton.module.css'
 
 type GridMode = 'carousel' | 'grid';
@@ -69,14 +69,19 @@ export default function DownloadButton({ image, columns, gridMode }: DownloadBut
       zip.file('grid_info.txt', gridInfo)
 
       const content = await zip.generateAsync({ type: 'blob' })
-      FileSaver.saveAs(content, 'instagram_grid.zip')
+      saveAs(content, 'instagram_grid.zip')
     }
     img.src = image
 
   }, [image, columns, gridMode, createSubImage])
 
   return (
-    <button onClick={handleDownload} className={styles.downloadButton} disabled={!image}>
+    <button 
+      onClick={handleDownload}
+      className="btn btn-primary btn-lg"
+      disabled={!image}
+    >
+      <i className="bi bi-download me-2"></i>
       Descargar Grid
     </button>
   )

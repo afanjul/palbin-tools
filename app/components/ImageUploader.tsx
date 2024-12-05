@@ -1,6 +1,7 @@
+'use client'
+
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import styles from './ImageUploader.module.css'
 
 interface ImageUploaderProps {
   onImageUpload: (image: string) => void
@@ -20,16 +21,36 @@ export default function ImageUploader({ onImageUpload }: ImageUploaderProps) {
     }
   }, [onImageUpload])
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.gif'] }, multiple: false })
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
+    onDrop, 
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.gif'] }, 
+    multiple: false 
+  })
 
   return (
-    <div {...getRootProps()} className={styles.dropzone}>
-      <input {...getInputProps()} />
-      {
-        isDragActive ?
-          <p>Suelta la imagen aquí...</p> :
-          <p>Arrastra y suelta una imagen aquí, o haz clic para seleccionar un archivo</p>
-      }
+    <div 
+      {...getRootProps()} 
+      className={`card bg-light border-2 ${isDragActive ? 'border-primary' : 'border-dashed'}`}
+      style={{ cursor: 'pointer' }}
+    >
+      <div className="card-body text-center py-5">
+        <input {...getInputProps()} />
+        <i className="bi bi-cloud-upload display-4 mb-3"></i>
+        <p className="mb-0">
+          {isDragActive ? (
+            <span className="text-primary">Drop your image here...</span>
+          ) : (
+            <>
+              <span className="fw-bold">Drag and drop an image here</span>
+              <br />
+              <span className="text-muted">or click to select a file</span>
+            </>
+          )}
+        </p>
+        <small className="text-muted d-block mt-2">
+          Supported formats: PNG, JPG, JPEG, GIF
+        </small>
+      </div>
     </div>
   )
 }
