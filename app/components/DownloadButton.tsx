@@ -82,7 +82,7 @@ export default function DownloadButton({ image, columns, gridMode }: DownloadBut
       disabled={!image}
     >
       <i className="bi bi-download me-2"></i>
-      Descargar Grid
+      Descargar Zip
     </button>
   )
 }

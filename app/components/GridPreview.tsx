@@ -66,29 +66,6 @@ export default function GridPreview({ image, columns, gridMode, onColumnsChange,
 
   return (
     <div className={styles.gridPreview}>
-      <div className={styles.controls}>
-        <label>
-          Columnas:
-          <input 
-            type="range" 
-            min="1" 
-            max="10" 
-            value={columns} 
-            onChange={(e) => onColumnsChange(parseInt(e.target.value))} 
-          />
-          <span>{columns}</span>
-        </label>
-        <label>
-          Modo:
-          <select 
-            value={gridMode} 
-            onChange={(e) => onGridModeChange(e.target.value as GridMode)}
-          >
-            <option value="carousel">Carrusel</option>
-            <option value="grid">Grid</option>
-          </select>
-        </label>
-      </div>
       <div className={styles.canvasContainer}>
         <canvas 
           ref={canvasRef}

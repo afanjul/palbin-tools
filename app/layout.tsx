@@ -1,61 +1,27 @@
-'use client'
-
 import './globals.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import { useEffect } from 'react'
+import RootLayoutClient from './components/RootLayoutClient'
 
+// Metadata for the app
 export const metadata = {
   title: 'Instagram Grid Maker',
   description: 'Create and customize your Instagram grid layout',
 }
 
+// Server component wrapper
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  useEffect(() => {
-    require('bootstrap/dist/js/bootstrap.bundle.min.js');
-  }, []);
-
   return (
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" />
-        <title>Instagram Grid Maker</title>
       </head>
-      <body className="bg-light">
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-          <div className="container-fluid">
-            <a className="navbar-brand" href="/">
-              <i className="bi bi-grid-3x3-gap me-2"></i>
-              Instagram Grid Maker
-            </a>
-            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarNav">
-              <ul className="navbar-nav ms-auto">
-                <li className="nav-item">
-                  <a className="nav-link" href="https://github.com/yourusername/instagram-grid-maker" target="_blank">
-                    <i className="bi bi-github me-1"></i>
-                    Palbin.com
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
-        <main className="container py-4">
-          {children}
-        </main>
-        <footer className="footer mt-auto py-3 bg-dark text-light">
-          <div className="container text-center">
-            <span>Built by Palbin.com</span>
-          </div>
-        </footer>
-      </body>
+      <RootLayoutClient>
+        {children}
+      </RootLayoutClient>
     </html>
   )
 }
