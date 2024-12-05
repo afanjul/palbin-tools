@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { Navbar, Nav, Container, Row, Col } from 'react-bootstrap'
-import 'bootstrap/dist/css/bootstrap.min.css'
 
 export default function RootLayoutClient({
   children,
