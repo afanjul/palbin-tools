@@ -39,7 +39,7 @@ export default function Home() {
 
         {/* Image Compressor Card */}
         <Col md={6} lg={5} className="mb-4">
-          <Link href="#" className="text-decoration-none">
+          <Link href="/image-compressor" className="text-decoration-none">
             <Card className="h-100 shadow-sm hover-shadow">
               <Image 
                 src="/tool-images/image-compressor.png" 
@@ -57,9 +57,9 @@ export default function Home() {
                 </Card.Text>
               </Card.Body>
               <Card.Footer className="bg-transparent border-0 p-3">
-                <div className="btn btn-secondary w-100">
-                  <i className="bi bi-file-earmark-zip me-2"></i>
-                  Coming Soon
+              <div className="btn btn-danger w-100">
+                  <i className="bi bi-grid-3x3-gap me-2"></i>
+                  Compress Image
                 </div>
               </Card.Footer>
             </Card>
