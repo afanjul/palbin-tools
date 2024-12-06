@@ -161,7 +161,7 @@ export default function ImageCompressor() {
         <Col>
           <Form.Group>
             <Form.Label className="d-flex justify-content-between align-items-center">
-              <span>API Key</span>
+              <span>Tinify - API Key</span>
               <a 
                 href="https://tinypng.com/developers" 
                 target="_blank" 
