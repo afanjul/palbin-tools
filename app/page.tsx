@@ -6,7 +6,7 @@ import Image from 'next/image'
 export default function Home() {
   return (
     <Container className="py-5">
-      <h1 className="text-center mb-5">Palbin.com Media Tools</h1>
+      <h1 className="text-center mb-5">Herramientas para Social Media</h1>
       <Row className="g-4 justify-content-center">
         {/* Instagram Grid Maker Card */}
         <Col md={6} lg={5} className="mb-4">
@@ -18,7 +18,7 @@ export default function Home() {
                 width={500}
                 height={200}
                 className="card-img-top"
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'contain', backgroundColor: '#f7f9f6' }}
               />
               <Card.Body>
                 <Card.Title className="text-dark">Instagram Grid Maker</Card.Title>
@@ -47,19 +47,48 @@ export default function Home() {
                 width={500}
                 height={200}
                 className="card-img-top"
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'contain', backgroundColor: '#f7f9f6' }}
               />
               <Card.Body>
                 <Card.Title className="text-dark">Image Compressor</Card.Title>
                 <Card.Text className="text-muted">
-                  Optimize your PNG and JPG images to reduce file size without losing quality. 
+                  Compress and optimize your images without losing quality. 
                   Perfect for web and social media use.
                 </Card.Text>
               </Card.Body>
               <Card.Footer className="bg-transparent border-0 p-3">
-              <div className="btn btn-danger w-100">
-                  <i className="bi bi-grid-3x3-gap me-2"></i>
-                  Compress Image
+                <div className="btn btn-danger w-100">
+                  <i className="bi bi-file-earmark-zip me-2"></i>
+                  Compress Images
+                </div>
+              </Card.Footer>
+            </Card>
+          </Link>
+        </Col>
+
+        {/* Thread Generator Card */}
+        <Col md={6} lg={5} className="mb-4">
+          <Link href="/thread-generator" className="text-decoration-none">
+            <Card className="h-100 shadow-sm hover-shadow">
+              <Image 
+                src="/tool-images/thread-generator.png" 
+                alt="Thread Generator"
+                width={500}
+                height={200}
+                className="card-img-top"
+                style={{ objectFit: 'contain', backgroundColor: '#f7f9f6' }}
+              />
+              <Card.Body>
+                <Card.Title className="text-dark">Thread Generator</Card.Title>
+                <Card.Text className="text-muted">
+                  Transform your long-form content into engaging Twitter/X threads. 
+                  AI-powered tool that maintains your message while optimizing for engagement.
+                </Card.Text>
+              </Card.Body>
+              <Card.Footer className="bg-transparent border-0 p-3">
+                <div className="btn btn-danger w-100">
+                  <i className="bi bi-chat-square-text me-2"></i>
+                  Create Thread
                 </div>
               </Card.Footer>
             </Card>

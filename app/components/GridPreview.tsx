@@ -36,7 +36,7 @@ export default function GridPreview({ image, columns, gridMode, onColumnsChange,
       const rows = gridMode === 'grid' ? Math.ceil(img.height / cellHeight) : 1
 
       ctx.strokeStyle = 'rgba(255, 255, 255, 1)'
-      ctx.lineWidth = 3
+      ctx.lineWidth = 10
 
       for (let i = 1; i < columns; i++) {
         const x = Math.floor(i * cellWidth) - 0.5

@@ -1,10 +1,10 @@
-import './globals.css'
+import './styles/globals.css';
 import RootLayoutClient from './components/RootLayoutClient'
 
 // Metadata for the app
 export const metadata = {
-  title: 'Instagram Grid Maker',
-  description: 'Create and customize your Instagram grid layout',
+  title: 'Herramientas para Social Media - By Palbin.com',
+  description: 'Usa nuestras herramientas para crear contenido de calidad para tus redes sociales.',
 }
 
 // Server component wrapper

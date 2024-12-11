@@ -10,9 +10,11 @@
     "export": "next export"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.0.7",
     "@types/file-saver": "^2.0.7",
     "@types/jszip": "^3.4.0",
     "@types/react-dropzone": "^4.2.2",
+    "ai": "^4.0.12",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "next": "15.0.3",
@@ -20,9 +22,11 @@
     "react-bootstrap": "^2.10.6",
     "react-compare-image": "^3.4.0",
     "react-dom": "^18",
-    "react-dropzone": "^14.3.5"
+    "react-dropzone": "^14.3.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@openrouter/ai-sdk-provider": "^0.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
