@@ -24,12 +24,43 @@ export default function ImageCompressor() {
   const [height, setHeight] = useState<number>(600)
   const [originalDimensions, setOriginalDimensions] = useState<{ width: number, height: number } | null>(null)
 
+  const compressImage = useCallback(async (file: File) => {
+    try {
+      setIsCompressing(true)
+      setOriginalFilename(file.name)
+
+      const formData = new FormData()
+      formData.append('image', file)
+      formData.append('apiKey', apiKey)
+      formData.append('originalFilename', file.name)
+      
+      const response = await fetch('/api/compress', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || `HTTP error! status: ${response.status}`)
+      }
+
+      const { url } = await response.json()
+      setCompressedImageUrl(url)
+      setCompressedImage(url)
+      
+    } catch (error) {
+      console.error('Compression error:', error)
+      alert(error instanceof Error ? error.message : 'Error compressing image. Please check your API key or try again.')
+    } finally {
+      setIsCompressing(false)
+    }
+  }, [apiKey])
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0]
       const reader = new FileReader()
       reader.onload = async () => {
-        // Get original dimensions
         const img = new Image()
         img.onload = () => {
           setOriginalDimensions({ width: img.width, height: img.height })
@@ -43,41 +74,7 @@ export default function ImageCompressor() {
       }
       reader.readAsDataURL(file)
     }
-  }, [apiKey])
-
-  const compressImage = async (file: File) => {
-    try {
-      setIsCompressing(true)
-      setOriginalFilename(file.name) // Store the original filename
-
-      // Create FormData
-      const formData = new FormData()
-      formData.append('image', file)
-      formData.append('apiKey', apiKey)
-      formData.append('originalFilename', file.name)
-      
-      // Send to our API route for initial compression
-      const response = await fetch('/api/compress', {
-        method: 'POST',
-        body: formData
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || `HTTP error! status: ${response.status}`)
-      }
-
-      const { url } = await response.json()
-      setCompressedImageUrl(url) // Store the TinyPNG URL for later use
-      setCompressedImage(url) // Use the URL directly for preview
-      
-    } catch (error) {
-      console.error('Compression error:', error)
-      alert(error instanceof Error ? error.message : 'Error compressing image. Please check your API key or try again.')
-    } finally {
-      setIsCompressing(false)
-    }
-  }
+  }, [compressImage])
 
   const downloadResized = async () => {
     if (!compressedImageUrl || !originalFilename) return
@@ -196,7 +193,7 @@ export default function ImageCompressor() {
               <Card.Body>
                 <i className="bi bi-cloud-upload display-1 mb-3"></i>
                 <p>
-                  Drag 'n' drop an image here, or click to select
+                  Drag &apos;n&apos; drop an image here, or click to select
                 </p>
               </Card.Body>
             </Card>

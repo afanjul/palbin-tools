@@ -33,13 +33,14 @@ export default function GridPreview({ image, columns, gridMode, onColumnsChange,
       const cellWidth = img.width / columns
       let cellHeight = gridMode === 'grid' ? cellWidth : img.height
 
+      const lineWidth = Math.max(1, Math.floor(img.width * 0.005))
       const rows = gridMode === 'grid' ? Math.ceil(img.height / cellHeight) : 1
 
-      ctx.strokeStyle = 'rgba(255, 255, 255, 1)'
-      ctx.lineWidth = 10
+      ctx.strokeStyle = 'rgba(220, 220, 220, 1)'
+      ctx.lineWidth = lineWidth
 
       for (let i = 1; i < columns; i++) {
-        const x = Math.floor(i * cellWidth) - 0.5
+        const x = Math.floor(i * cellWidth) - (lineWidth / 2)
         ctx.beginPath()
         ctx.moveTo(x, 0)
         ctx.lineTo(x, canvas.height)
@@ -48,7 +49,7 @@ export default function GridPreview({ image, columns, gridMode, onColumnsChange,
 
       if (gridMode === 'grid') {
         for (let i = 1; i < rows; i++) {
-          const y = Math.floor(i * cellHeight) - 0.5
+          const y = Math.floor(i * cellHeight)  - (lineWidth / 2)
           ctx.beginPath()
           ctx.moveTo(0, y)
           ctx.lineTo(canvas.width, y)

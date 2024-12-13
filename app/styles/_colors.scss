@@ -1,0 +1,26 @@
+$primary: #e0142d;
+$secondary: #2dc4b5;
+$tertiary:   #ff9f1c;
+$quaternary: #fb5dff;
+$quinary:    #6a55ff;
+$success:    #2dc4b5;
+$info:       #01BAEF;
+$warning:    #ff9f1c;
+$danger:     #e0142d;
+$light:      #f7f9f6;
+$dark:       #2a2b2b;
+$black:       #111111;
+
+$theme-colors: (
+  "primary":    $primary,
+  "secondary":  $secondary,
+  "tertiary":   $tertiary,
+  "quaternary": $quaternary,
+  "quinary":    $quinary,
+  "success":    $success,
+  "info":       $info,
+  "warning":    $warning,
+  "danger":     $danger,
+  "light":      $light,
+  "dark":       $dark
+);

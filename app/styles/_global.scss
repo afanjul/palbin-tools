@@ -1,0 +1,43 @@
+/*********************** GLOBAL >>> *******************/
+html {
+  scroll-behavior: smooth;
+}
+
+html:not(.with-hero) .nav-menu.fixed-top.is-not-scrolling + * {
+  transition: margin 300ms;
+  margin-top: $navbar-height;
+}
+
+html:not(.with-hero) .nav-menu.fixed-top.is-scrolling + * {
+  transition: margin 300ms;
+  margin-top: 57.78px;
+}
+
+.sticky-top-offset {
+  top: 80px;
+}
+
+.scroll-offset {
+  margin-top: -60px;
+  padding-top: 60px;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+dt {
+  color: gray("900");
+}
+
+h3, h4, h5, h6 {
+  font-weight: $font-weight-normal;
+}
+
+abbr[title],
+abbr[data-original-title] {
+  text-decoration: none;
+  border-bottom: 1px dotted theme-color("dark");
+}
+
+/*********************** <<< GLOBAL *******************/

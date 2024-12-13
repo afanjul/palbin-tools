@@ -5,7 +5,7 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <Container className="py-5">
+    <Container>
       <h1 className="text-center mb-5">Herramientas para Social Media</h1>
       <Row className="g-4 justify-content-center">
         {/* Instagram Grid Maker Card */}

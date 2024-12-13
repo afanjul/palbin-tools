@@ -1,4 +1,4 @@
-import './styles/globals.css';
+import './styles/custom.scss';
 import RootLayoutClient from './components/RootLayoutClient'
 
 // Metadata for the app
@@ -17,10 +17,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" />
+        <script src="/scripts/script.js" defer></script>
       </head>
-      <body>
+      <body className="">
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>

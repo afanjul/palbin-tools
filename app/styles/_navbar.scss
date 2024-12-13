@@ -1,0 +1,115 @@
+/**************** NAVBAR ***********************/
+.brand-logo {
+  .navbar-brand & {
+    height: 29px;
+  }
+  .subfooter-logo & {
+    max-width: 140px;
+  }
+  &.logo-primary {
+    .logo-path {
+      fill: $primary;
+    }
+    .logo-eye-path {
+      fill: $tertiary;
+    }
+  }
+  &.logo-light {
+    .logo-path {
+      fill: $light;
+    }
+    .logo-eye-path {
+      fill: $light;
+    }
+  }
+  &.logo-dark {
+    .logo-path {
+      fill: $dark;
+    }
+    .logo-eye-path {
+      fill: $dark;
+    }
+  }
+}
+
+.navbar-divider {
+  width: 0;
+  overflow: hidden;
+  border-left: 1px solid transparentize($black, 0.5);
+  height: 18px;
+  margin: 10px 0.5rem 0;
+}
+.nav-menu {
+  transition: all 0.3s ease;
+}
+
+.nav-menu {
+  background-color: $light;
+  @include box-shadow(0px 5px 23px 0px rgba(0, 0, 0, 0.1));
+
+  &.is-scrolling {
+    padding: 0 !important;
+  }
+
+  .site-index &.is-not-scrolling.menu-is-closed {
+    background-color: transparent;
+    @include box-shadow(none);
+  }
+}
+
+.site-index .nav-menu.is-not-scrolling.menu-is-closed{
+  .navbar-btn-cta {
+    @include button-variant($light, $light);
+  }
+  .navbar-btn-login {
+    @include button-outline-variant($light);
+  }
+  .navbar-btn-phone {
+    color: #fff !important;
+  }
+  .navbar-divider {
+    border-left-color: transparentize($white, 0.5);
+  }
+  .navbar-callme-link {
+    color: $light;
+  }
+}
+
+.navbar-nav .nav-link {
+  position: relative;
+}
+
+.navbar-nav>.nav-item>.nav-link.active:after {
+  @include media-breakpoint-up(lg) {
+    content: "";
+    border-bottom: 2px solid lighten($primary, 15%);
+    left: 1rem;
+    right: 1rem;
+    bottom: 5px;
+    height: 1px;
+    position: absolute;
+  }
+}
+
+#login-dropdown {
+  min-width: 14rem;
+}
+
+#callmenow-dropdown .form-group{
+  margin-bottom: 0.5rem;
+}
+
+.megamenu {
+  position: static;
+  & .dropdown-menu {
+    width: 100%;
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .menu-is-open nav.navbar{
+    max-height: 100vh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

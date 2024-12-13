@@ -15,6 +15,7 @@
     "@types/jszip": "^3.4.0",
     "@types/react-dropzone": "^4.2.2",
     "ai": "^4.0.12",
+    "bootstrap": "^5.3.3",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "next": "15.0.3",
@@ -23,6 +24,7 @@
     "react-compare-image": "^3.4.0",
     "react-dom": "^18",
     "react-dropzone": "^14.3.5",
+    "sass": "^1.82.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

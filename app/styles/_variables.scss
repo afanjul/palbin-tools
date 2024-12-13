@@ -1,0 +1,84 @@
+$enable-grad:         true;
+/************** Variables ***************/
+// Options
+$enable-responsive-font-sizes:  true;
+
+//Fonts and Text
+$font-family-sans-serif:        'Rubik', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-weight-light:             300;
+$font-weight-normal:            400;
+$font-weight-bold:              500;
+$font-weight-bolder:            700;
+$font-weight-base:              $font-weight-normal;
+
+$font-size-base:                1rem;
+$font-size-lg:                  $font-size-base * 1.15;
+$font-size-sm:                  $font-size-base * .875;
+
+$line-height-sm:                1.2;
+
+$h1-font-size:                  3.50rem;
+$h2-font-size:                  2.75rem;
+$h3-font-size:                  2.00rem;
+$h4-font-size:                  1.75rem;
+$h5-font-size:                  1.50rem;
+$h6-font-size:                  1.25rem;
+$headings-font-weight:          300;
+
+$enable-shadows:                true;
+
+$display-types: (
+  1: (font-size: 6rem, font-weight: 300, line-height: 1),
+  2: (font-size: 4rem, font-weight: 300, line-height: 1.075),
+  3: (font-size: 2.667rem, font-weight: 300, line-height: 1.15),
+  4: (font-size: 1.778rem, font-weight: 300, line-height: 1.175),
+  5: (font-size: 1.5rem, font-weight: 300, line-height: 1.2),
+  6: (font-size: 1.185rem, font-weight: 300, line-height: 1.2)
+);
+
+
+//Buttons
+$btn-transition:                color .3s ease, background-color .3s ease, border-color .3s ease, box-shadow .3s ease;
+$btn-border-width:              1px;
+
+$btn-font-size:                 1rem;
+$btn-padding-x:                 1.25rem;
+$btn-padding-y:                 0.5rem;
+
+$btn-font-size-sm:              0.8125rem;
+$btn-padding-x-sm:              1rem;
+$btn-padding-y-sm:              0.4rem;
+
+$btn-font-size-lg:              1.15rem;
+$btn-padding-x-lg:              1.75rem;
+$btn-padding-y-lg:              0.85rem;
+
+//Inputs
+$input-btn-font-size:            1rem;
+//$input-btn-padding-x:            1.25rem;
+$input-btn-padding-y:            0.5rem;
+
+$input-btn-font-size-sm:         0.8125rem;
+//$input-btn-padding-x-sm:         1rem;
+$input-btn-padding-y-sm:         0.4rem;
+
+$input-btn-font-size-lg:         1.15rem;
+//$input-btn-padding-x-lg:         1.75rem;
+$input-btn-padding-y-lg:         0.85rem;
+
+//Navbar
+$navbar-nav-link-padding-x:     0.75rem !default;
+
+//Popover
+$popover-max-width: 320px;
+
+//Own variabless
+$navbar-height: 89.78px;
+
+//Spinners
+$spinner-width:         1.2rem;
+$spinner-height:        $spinner-width;
+$spinner-border-width:  .2em;
+
+//Breadcrumbs
+$breadcrumb-divider:    quote(">");
