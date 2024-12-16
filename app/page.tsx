@@ -8,6 +8,35 @@ export default function Home() {
     <Container>
       <h1 className="text-center mb-5">Herramientas para Social Media</h1>
       <Row className="g-4 justify-content-center">
+        {/* Invoice Generator Card */}
+        <Col md={6} lg={5} className="mb-4">
+          <Link href="/invoice-generator" className="text-decoration-none">
+            <Card className="h-100 shadow-sm hover-shadow">
+              <Image 
+                src="/tool-images/invoice-generator.png" 
+                alt="Invoice Generator"
+                width={500}
+                height={200}
+                className="card-img-top"
+                style={{ objectFit: 'contain', backgroundColor: '#f7f9f6' }}
+              />
+              <Card.Body>
+                <Card.Title className="text-dark">Generador de Facturas</Card.Title>
+                <Card.Text className="text-muted">
+                  Crea facturas profesionales de forma rápida y sencilla. 
+                  Guarda tus datos de empresa y genera facturas con cálculos automáticos.
+                </Card.Text>
+              </Card.Body>
+              <Card.Footer className="bg-transparent border-0 p-3">
+                <div className="btn btn-primary w-100">
+                  <i className="bi bi-file-earmark-text me-2"></i>
+                  Crear Factura
+                </div>
+              </Card.Footer>
+            </Card>
+          </Link>
+        </Col>
+
         {/* Instagram Grid Maker Card */}
         <Col md={6} lg={5} className="mb-4">
           <Link href="/instagram-grid-maker" className="text-decoration-none">
