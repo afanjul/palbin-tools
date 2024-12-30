@@ -1,50 +1,19 @@
 import React from 'react';
 import { InvoiceTemplateProps } from './types';
 
-export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = (props) => {
-  const {
-    invoiceData,
-    company,
-    customer,
-    items,
-    showGlobalDiscount,
-    globalDiscount,
-    showHeaderText,
-    headerText,
-    showFooterText,
-    footerText
-  } = props;
-
-  const calculateSubtotal = () => {
-    return items.reduce((acc, item) => {
-      const lineSubtotal = item.quantity * item.price;
-      const lineDiscount = lineSubtotal * (item.discount / 100);
-      return acc + (lineSubtotal - lineDiscount);
-    }, 0);
-  };
-
-  const calculateTaxes = () => {
-    return items.reduce((acc, item) => {
-      const lineSubtotal = item.quantity * item.price;
-      const lineDiscount = lineSubtotal * (item.discount / 100);
-      const baseTaxable = lineSubtotal - lineDiscount;
-      return acc + (baseTaxable * (item.tax / 100));
-    }, 0);
-  };
-
-  const calculateTotal = () => {
-    const subtotal = calculateSubtotal();
-    const taxes = calculateTaxes();
-    let total = subtotal;
-    
-    if (showGlobalDiscount && typeof globalDiscount === 'number') {
-      total = total - globalDiscount;
-    }
-    
-    total += taxes;
-    return total;
-  };
-
+export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = ({
+  invoiceData,
+  company,
+  customer,
+  items,
+  calculations,
+  showLineDiscounts,
+  showGlobalDiscount,
+  headerText,
+  showHeaderText,
+  footerText,
+  showFooterText,
+}) => {
   return (
     <div className="minimalist-template invoice-template py-5" style={{ 
       maxWidth: '800px',
@@ -149,17 +118,9 @@ export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = (props) => {
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
                 color: '#6B7280'
-              }}>Descripción</th>
-              <th style={{ 
-                textAlign: 'right',
-                padding: '0.75rem 0',
-                fontSize: '0.75rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                color: '#6B7280'
               }}>Cantidad</th>
               <th style={{ 
-                textAlign: 'right',
+                textAlign: 'left',
                 padding: '0.75rem 0',
                 fontSize: '0.75rem',
                 textTransform: 'uppercase',
@@ -167,13 +128,23 @@ export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = (props) => {
                 color: '#6B7280'
               }}>Precio</th>
               <th style={{ 
-                textAlign: 'right',
+                textAlign: 'left',
                 padding: '0.75rem 0',
                 fontSize: '0.75rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
                 color: '#6B7280'
               }}>IVA</th>
+              {showLineDiscounts && (
+                <th style={{ 
+                  textAlign: 'left',
+                  padding: '0.75rem 0',
+                  fontSize: '0.75rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  color: '#6B7280'
+                }}>Descuento</th>
+              )}
               <th style={{ 
                 textAlign: 'right',
                 padding: '0.75rem 0',
@@ -186,21 +157,22 @@ export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = (props) => {
           </thead>
           <tbody>
             {items.map((item, index) => {
-              const subtotal = item.quantity * item.price;
-              const tax = subtotal * (item.tax / 100);
-              const total = subtotal + tax;
+              const lineSubtotal = item.quantity * item.price;
+              const lineDiscount = lineSubtotal * (item.discount / 100);
+              const lineTaxableAmount = lineSubtotal - lineDiscount;
+              const lineTaxAmount = lineTaxableAmount * (item.taxAmount / 100);
+              const lineTotal = lineTaxableAmount + lineTaxAmount;
 
               return (
-                <tr key={item.id} style={{ 
-                  borderBottom: '1px solid #E5E7EB',
-                  backgroundColor: index % 2 === 0 ? '#F9FAFB' : 'white'
-                }}>
-                  <td style={{ padding: '1rem 0', color: '#111827' }}>{item.concept}</td>
-                  <td style={{ padding: '1rem 0', color: '#6B7280', fontSize: '0.875rem' }}>{item.description}</td>
-                  <td style={{ padding: '1rem 0', textAlign: 'right' }}>{item.quantity}</td>
-                  <td style={{ padding: '1rem 0', textAlign: 'right' }}>{item.price.toFixed(2)} €</td>
-                  <td style={{ padding: '1rem 0', textAlign: 'right' }}>{item.tax}%</td>
-                  <td style={{ padding: '1rem 0', textAlign: 'right', fontWeight: 500 }}>{total.toFixed(2)} €</td>
+                <tr key={item.id} className={index % 2 === 0 ? 'bg-gray-50/50' : ''}>
+                  <td className="p-4">{item.concept}</td>
+                  <td className="p-4">{item.quantity}</td>
+                  <td className="p-4">{item.price.toFixed(2)}€</td>
+                  <td className="p-4">{item.taxAmount}%</td>
+                  {showLineDiscounts && (
+                    <td className="p-4">{item.discount > 0 ? `${item.discount}%` : '-'}</td>
+                  )}
+                  <td className="p-4 text-right font-medium">{lineTotal.toFixed(2)}€</td>
                 </tr>
               );
             })}
@@ -213,64 +185,59 @@ export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = (props) => {
         width: '100%',
         maxWidth: '300px'
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0.5rem 0',
-          fontSize: '0.875rem'
-        }}>
-          <span style={{ color: '#6B7280' }}>Base imponible</span>
-          <span style={{ color: '#111827' }}>{calculateSubtotal().toFixed(2)} €</span>
+        <div className="flex justify-between mb-3" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+          <span style={{ color: '#6B7280' }}>Base imponible:</span>
+          <span style={{ fontWeight: 500 }}>{calculations.subtotalWithoutDiscount.toFixed(2)}€</span>
         </div>
 
-        {showGlobalDiscount && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '0.5rem 0',
-            fontSize: '0.875rem'
-          }}>
-            <span style={{ color: '#6B7280' }}>Descuento global</span>
-            <span style={{ color: '#DC2626' }}>-{(globalDiscount ?? 0).toFixed(2)} €</span>
+        {calculations.productDiscountAmount > 0 && (
+          <div className="flex justify-between mb-3" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+            <span style={{ color: '#6B7280' }}>Descuento por líneas:</span>
+            <span style={{ fontWeight: 500, color: '#DC2626' }}>
+              -{calculations.productDiscountAmount.toFixed(2)}€
+            </span>
           </div>
         )}
 
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0.5rem 0',
-          fontSize: '0.875rem'
-        }}>
-          <span style={{ color: '#6B7280' }}>IVA</span>
-          <span style={{ color: '#111827' }}>{calculateTaxes().toFixed(2)} €</span>
+        {showGlobalDiscount && calculations.globalDiscountAmount > 0 && (
+          <div className="flex justify-between mb-3" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+            <span style={{ color: '#6B7280' }}>Descuento global:</span>
+            <span style={{ fontWeight: 500, color: '#DC2626' }}>
+              -{calculations.globalDiscountAmount.toFixed(2)}€
+            </span>
+          </div>
+        )}
+
+        <div className="flex justify-between mb-3" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+          <span style={{ color: '#6B7280' }}>Subtotal:</span>
+          <span style={{ fontWeight: 500 }}>{calculations.subtotal.toFixed(2)}€</span>
         </div>
 
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '0.5rem',
-          paddingTop: '0.5rem',
-          borderTop: '2px solid #E5E7EB',
-          fontSize: '1rem',
-          fontWeight: 600
+        {Object.entries(calculations.taxBreakdown).map(([rate, tax]) => (
+          <div key={rate} className="flex justify-between mb-3" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+            <span style={{ color: '#6B7280' }}>IVA ({rate}%):</span>
+            <span style={{ fontWeight: 500 }}>{tax.amount.toFixed(2)}€</span>
+          </div>
+        ))}
+
+        <div className="flex justify-between pt-3" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          paddingTop: '0.75rem',
+          borderTop: '1px solid #E5E7EB'
         }}>
-          <span>Total</span>
-          <span>{calculateTotal().toFixed(2)} €</span>
+          <span style={{ fontSize: '1.25rem', fontWeight: 700 }}>Total:</span>
+          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#2563EB' }}>
+            {calculations.total.toFixed(2)}€
+          </span>
         </div>
       </div>
 
       {showFooterText && footerText && (
-        <div style={{ 
-          marginTop: '3rem',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid #E5E7EB',
+        <div className="footer-text mt-5" style={{ 
+          whiteSpace: 'pre-line',
           color: '#6B7280',
-          fontSize: '0.875rem',
-          whiteSpace: 'pre-line'
+          fontSize: '0.875rem'
         }}>
           {footerText}
         </div>

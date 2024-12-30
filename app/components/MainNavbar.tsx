@@ -3,12 +3,26 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Navbar, Nav, Container, Button, Dropdown } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
 
 const baseUrl = "https://www.palbin.com/es";
 
 export default function MainNavbar() {
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolling(window.scrollY > 0);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial scroll position
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="nav-menu menu-is-closed py-3">
+    <div className={`nav-menu menu-is-closed py-3${isScrolling ? ' is-scrolling' : ''}`}>
       <Container>
         <Navbar bg="light" expand="lg">
           <Link href="/" passHref legacyBehavior>

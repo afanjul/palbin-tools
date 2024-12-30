@@ -1,3 +1,10 @@
+export interface TaxBreakdown {
+  [key: string]: {
+    base: number;
+    amount: number;
+  };
+}
+
 export interface InvoiceData {
   series: string;
   number: string;
@@ -18,6 +25,16 @@ export interface Address {
   zipCode: string;
 }
 
+export interface InvoiceCalculations {
+  subtotalWithoutDiscount: number;
+  productDiscountAmount: number;
+  globalDiscountAmount: number;
+  subtotal: number;
+  taxBreakdown: TaxBreakdown;
+  totalTaxes: number;
+  total: number;
+}
+
 export interface InvoiceTemplateProps {
   invoiceData: InvoiceData;
   company: Address;
@@ -28,11 +45,12 @@ export interface InvoiceTemplateProps {
     description: string;
     quantity: number;
     price: number;
-    tax: number;
+    taxAmount: number;
     discount: number;
   }>;
-  showGlobalDiscount?: boolean;
-  globalDiscount?: number;
+  calculations: InvoiceCalculations;
+  showLineDiscounts: boolean;
+  showGlobalDiscount: boolean;
   headerText?: string;
   showHeaderText?: boolean;
   footerText?: string;

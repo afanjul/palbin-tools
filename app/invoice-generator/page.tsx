@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Container, Card, Row, Col, Form, Table, Button, Accordion, Modal } from 'react-bootstrap';
+import { Container, Card, Row, Col, Form, Table, Button, Accordion, Modal, Dropdown, ButtonGroup } from 'react-bootstrap';
 import { Country, State, City } from 'country-state-city';
 import countries from 'i18n-iso-countries';
 import es from 'i18n-iso-countries/langs/es.json';
@@ -21,7 +21,7 @@ interface Item {
   description: string;
   quantity: number;
   price: number;
-  tax: number;
+  taxAmount: number;
   discount: number;
   editingPrice: string;
   editingTotal: string;
@@ -45,6 +45,23 @@ interface Address {
   province: string;
   countryCode: string;
   zipCode: string;
+}
+
+interface TaxBreakdown {
+  [key: string]: {
+    base: number;
+    amount: number;
+  };
+}
+
+interface InvoiceCalculations {
+  subtotalWithoutDiscount: number;
+  productDiscountAmount: number;
+  globalDiscountAmount: number;
+  subtotal: number;
+  taxBreakdown: TaxBreakdown;
+  totalTaxes: number;
+  total: number;
 }
 
 export default function InvoiceGenerator() {
@@ -74,24 +91,52 @@ export default function InvoiceGenerator() {
     };
   });
 
-  const [customer, setCustomer] = useState<Address>({
-    name: '',
-    nif: '',
-    email: '',
-    address: '',
-    city: '',
-    province: 'Madrid',
-    countryCode: 'ES',
-    zipCode: ''
+  const [customer, setCustomer] = useState<Address>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('customerData');
+      return saved ? JSON.parse(saved) : {
+        name: '',
+        nif: '',
+        email: '',
+        address: '',
+        city: '',
+        province: 'Madrid',
+        countryCode: 'ES',
+        zipCode: ''
+      };
+    }
+    return {
+      name: '',
+      nif: '',
+      email: '',
+      address: '',
+      city: '',
+      province: 'Madrid',
+      countryCode: 'ES',
+      zipCode: ''
+    };
   });
 
-  const [invoiceData, setInvoiceData] = useState<InvoiceData>({
-    series: '',
-    number: '',
-    issueDate: new Date().toISOString().split('T')[0],
-    operationDate: new Date().toISOString().split('T')[0],
-    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    dueDays: 30
+  const [invoiceData, setInvoiceData] = useState<InvoiceData>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('invoiceData');
+      return saved ? JSON.parse(saved) : {
+        series: '',
+        number: '',
+        issueDate: new Date().toISOString().split('T')[0],
+        operationDate: new Date().toISOString().split('T')[0],
+        dueDate: new Date().toISOString().split('T')[0],
+        dueDays: 0
+      };
+    }
+    return {
+      series: '',
+      number: '',
+      issueDate: new Date().toISOString().split('T')[0],
+      operationDate: new Date().toISOString().split('T')[0],
+      dueDate: new Date().toISOString().split('T')[0],
+      dueDays: 0
+    };
   });
 
   const [items, setItems] = useState<Item[]>([createEmptyItem(1)]);
@@ -123,6 +168,14 @@ export default function InvoiceGenerator() {
       alert('Error al imprimir. Por favor, inténtelo de nuevo.');
     },
   });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('invoiceData', JSON.stringify(invoiceData));
+      localStorage.setItem('companyData', JSON.stringify(company));
+      localStorage.setItem('customerData', JSON.stringify(customer));
+    }
+  }, [invoiceData, company, customer]);
 
   useEffect(() => {
     localStorage.setItem('companyData', JSON.stringify(company));
@@ -158,31 +211,61 @@ export default function InvoiceGenerator() {
   }, [invoiceData, company, customer, items, discount, showLineDiscounts, showHeaderText, showFooterText]);
 
   const handleReset = () => {
-    const savedCompany = { ...company };
-    const savedInvoiceData = { ...invoiceData };
+    if (typeof window !== 'undefined') {
+      // Clear only the customer and invoice data
+      localStorage.removeItem('customerData');
+      localStorage.removeItem('invoiceData');
+    }
     
+    setInvoiceData({
+      series: '',
+      number: '',
+      issueDate: new Date().toISOString().split('T')[0],
+      operationDate: new Date().toISOString().split('T')[0],
+      dueDate: new Date().toISOString().split('T')[0],
+      dueDays: 0
+    });
+
     setCustomer({
       name: '',
       nif: '',
       email: '',
       address: '',
       city: '',
-      province: '',
+      province: 'Madrid',
       countryCode: 'ES',
       zipCode: ''
     });
+
     setItems([]);
-    setDiscount({
-      amount: 0,
-      type: 'fixed',
-      showInDocument: true
-    });
-    setShowLineDiscounts(false);
-    setShowHeaderText(true);
-    setShowFooterText(true);
+    setShowGlobalDiscount(false);
+    setDiscount({ type: 'fixed', amount: 0, showInDocument: true });
+    setShowHeaderText(false);
+    setHeaderText('');
+    setShowFooterText(false);
+    setFooterText('');
+  };
+
+  const handleResetAll = () => {
+    if (typeof window !== 'undefined') {
+      // Clear all data including company data
+      localStorage.removeItem('customerData');
+      localStorage.removeItem('invoiceData');
+      localStorage.removeItem('companyData');
+    }
     
-    setCompany(savedCompany);
-    setInvoiceData(savedInvoiceData);
+    handleReset(); // Reset invoice and customer data
+
+    setCompany({
+      name: '',
+      nif: '',
+      email: '',
+      address: '',
+      city: '',
+      province: 'Madrid',
+      countryCode: 'ES',
+      zipCode: ''
+    });
   };
 
   function createEmptyItem(id: number): Item {
@@ -192,181 +275,85 @@ export default function InvoiceGenerator() {
       description: '',
       quantity: 1,
       price: 0,
-      tax: 21,
+      taxAmount: 21,
       discount: 0,
-      editingPrice: '0.00',
-      editingTotal: '0.00'
+      editingPrice: '0',
+      editingTotal: '0'
     };
   }
 
-  function calculateLineTotal(quantity: number, price: number, tax: number, discount: number = 0): number {
-    const subtotal = quantity * price;
-    const discountAmount = subtotal * (discount / 100);
-    return (subtotal - discountAmount) * (1 + tax / 100);
-  }
+  const calculateInvoiceData = (items: Item[]): InvoiceCalculations => {
+    // 1. Calcular subtotal sin descuento (suma de precio * cantidad de cada línea)
+    const subtotalWithoutDiscount = items.reduce((acc, item) => 
+      acc + (item.quantity * item.price), 0
+    );
 
-  function calculateLinePrice(total: number, quantity: number, tax: number, discount: number = 0): number {
-    const subtotal = total / (1 + tax / 100);
-    const discountAmount = subtotal * (discount / 100);
-    return (subtotal - discountAmount) / quantity;
-  }
-
-  const calculateDueDate = (issueDate: string, days: number): string => {
-    const date = new Date(issueDate);
-    date.setDate(date.getDate() + days);
-    return date.toISOString().split('T')[0];
-  };
-
-  const handleIssueDateChange = (newDate: string) => {
-    setInvoiceData({
-      ...invoiceData,
-      issueDate: newDate,
-      operationDate: newDate,
-      dueDate: calculateDueDate(newDate, invoiceData.dueDays)
-    });
-  };
-
-  const handleDueDaysChange = (days: number) => {
-    setInvoiceData({
-      ...invoiceData,
-      dueDays: days,
-      dueDate: calculateDueDate(invoiceData.issueDate, days)
-    });
-  };
-
-  const updateItemField = (id: number, field: string, value: string | number) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateNumericField = (
-    id: number, 
-    field: 'editingPrice' | 'editingTotal', 
-    value: string,
-    recalculateField?: 'total' | 'price'
-  ) => {
-    setItems(items.map(item => {
-      if (item.id === id) {
-        const updatedItem = { ...item, [field]: value };
-        
-        if (recalculateField) {
-          const numValue = parseFloat(value) || 0;
-          if (recalculateField === 'total') {
-            const newTotal = calculateLineTotal(item.quantity, numValue, item.tax, item.discount);
-            updatedItem.editingTotal = newTotal.toFixed(2);
-          } else {
-            const newPrice = calculateLinePrice(numValue, item.quantity, item.tax, item.discount);
-            updatedItem.editingPrice = newPrice.toFixed(2);
-          }
-        }
-        
-        return updatedItem;
-      }
-      return item;
-    }));
-  };
-
-  const handleFieldBlur = (id: number, field: 'price' | 'total') => {
-    setItems(items.map(item => {
-      if (item.id === id) {
-        const isPrice = field === 'price';
-        const value = parseFloat(isPrice ? item.editingPrice : item.editingTotal) || 0;
-        const newPrice = isPrice ? value : calculateLinePrice(value, item.quantity, item.tax, item.discount);
-        const newTotal = isPrice ? calculateLineTotal(item.quantity, value, item.tax, item.discount) : value;
-
-        return {
-          ...item,
-          price: newPrice,
-          editingPrice: newPrice.toFixed(2),
-          editingTotal: newTotal.toFixed(2)
-        };
-      }
-      return item;
-    }));
-  };
-
-  const handleQuantityChange = (id: number, value: string) => {
-    const quantity = parseFloat(value) || 0;
-    setItems(items.map(item => {
-      if (item.id === id) {
-        const newTotal = calculateLineTotal(quantity, item.price, item.tax, item.discount);
-        return {
-          ...item,
-          quantity,
-          editingTotal: newTotal.toFixed(2)
-        };
-      }
-      return item;
-    }));
-  };
-
-  const handleTaxChange = (id: number, value: string) => {
-    const tax = parseInt(value);
-    setItems(items.map(item => {
-      if (item.id === id) {
-        const newTotal = calculateLineTotal(item.quantity, item.price, tax, item.discount);
-        return {
-          ...item,
-          tax,
-          editingTotal: newTotal.toFixed(2)
-        };
-      }
-      return item;
-    }));
-  };
-
-  const handleLineDiscountChange = (id: number, value: string) => {
-    const discountValue = parseFloat(value) || 0;
-    setItems(items.map(item => {
-      if (item.id === id) {
-        const newTotal = calculateLineTotal(item.quantity, item.price, item.tax, discountValue);
-        return {
-          ...item,
-          discount: discountValue,
-          editingTotal: newTotal.toFixed(2)
-        };
-      }
-      return item;
-    }));
-  };
-
-  const addItem = () => {
-    setItems([...items, createEmptyItem(items.length + 1)]);
-  };
-
-  const deleteItem = (id: number) => {
-    setItems(items.filter(item => item.id !== id));
-  };
-
-  const calculateTotals = () => {
-    const subtotal = items.reduce((acc, item) => {
+    // 2. Calcular descuento por producto (suma de los descuentos individuales)
+    const productDiscountAmount = items.reduce((acc, item) => {
       const lineSubtotal = item.quantity * item.price;
-      const lineDiscount = showLineDiscounts ? (lineSubtotal * (item.discount / 100)) : 0;
-      return acc + (lineSubtotal - lineDiscount);
+      return acc + (lineSubtotal * (item.discount / 100));
     }, 0);
 
-    const globalDiscountAmount = discount.type === 'fixed' 
-      ? discount.amount 
-      : (subtotal * (discount.amount / 100));
+    // 3. Calcular descuento global (solo si está activo)
+    const baseForGlobalDiscount = subtotalWithoutDiscount - productDiscountAmount;
+    let globalDiscountAmount = 0;
+    
+    if (showGlobalDiscount && discount) {
+      if (discount.type === 'fixed') {
+        // Si es fijo, no puede superar la base
+        globalDiscountAmount = Math.min(discount.amount, baseForGlobalDiscount);
+      } else {
+        // Si es porcentaje, calculamos sobre la base
+        globalDiscountAmount = baseForGlobalDiscount * (discount.amount / 100);
+      }
+    }
 
-    const taxAmount = items.reduce((acc, item) => {
+    // 4. Calcular subtotal final
+    const subtotal = subtotalWithoutDiscount - productDiscountAmount - globalDiscountAmount;
+
+    // 5. Calcular IVA por tipos
+    const taxBreakdown: TaxBreakdown = {};
+    const totalAfterDiscounts = subtotal;
+    const discountRatio = totalAfterDiscounts / (subtotalWithoutDiscount || 1);
+
+    items.forEach(item => {
       const lineSubtotal = item.quantity * item.price;
-      const lineDiscount = showLineDiscounts ? (lineSubtotal * (item.discount / 100)) : 0;
-      return acc + ((lineSubtotal - lineDiscount) * (item.tax / 100));
-    }, 0);
+      const lineSubtotalAfterDiscount = lineSubtotal * discountRatio;
+      const taxRate = item.taxAmount.toString();
 
-    const total = subtotal - globalDiscountAmount + taxAmount;
+      if (!taxBreakdown[taxRate]) {
+        taxBreakdown[taxRate] = { base: 0, amount: 0 };
+      }
 
-    return { 
-      subtotal, 
-      taxAmount, 
-      total, 
-      globalDiscountAmount
+      taxBreakdown[taxRate].base += lineSubtotalAfterDiscount;
+      taxBreakdown[taxRate].amount += lineSubtotalAfterDiscount * (item.taxAmount / 100);
+    });
+
+    // 6. Calcular total de impuestos
+    const totalTaxes = Object.values(taxBreakdown).reduce((acc, tax) => 
+      acc + tax.amount, 0
+    );
+
+    // 7. Calcular total final
+    const total = subtotal + totalTaxes;
+
+    return {
+      subtotalWithoutDiscount,
+      productDiscountAmount,
+      globalDiscountAmount,
+      subtotal,
+      taxBreakdown,
+      totalTaxes,
+      total
     };
   };
 
-  const { subtotal, taxAmount, total, globalDiscountAmount: calculatedGlobalDiscountAmount } = calculateTotals();
+  const [calculations, setCalculations] = useState<InvoiceCalculations>(calculateInvoiceData(items));
+
+  useEffect(() => {
+    const newCalculations = calculateInvoiceData(items);
+    setCalculations(newCalculations);
+  }, [items, discount]);
 
   const countryList = Country.getAllCountries().map(country => ({
     isoCode: country.isoCode,
@@ -396,13 +383,135 @@ export default function InvoiceGenerator() {
     setShowLineDiscounts(checked);
     if (!checked) {
       setItems(items.map(item => {
-        const newTotal = calculateLineTotal(item.quantity, item.price, item.tax, 0);
+        const newTotal = calculateLineTotal(item.quantity, item.price, item.taxAmount, 0);
         return {
           ...item,
           discount: 0,
           editingTotal: newTotal.toFixed(2)
         };
       }));
+    }
+  };
+
+  const handleShowGlobalDiscountChange = (checked: boolean) => {
+    setShowGlobalDiscount(checked);
+    if (!checked) {
+      // Reset discount values when unchecking
+      setDiscount({
+        type: 'percentage',
+        amount: 0,
+        showInDocument: true
+      });
+    }
+  };
+
+  function calculateLineTotal(quantity: number, price: number, taxAmount: number, discount: number = 0): number {
+    const subtotal = quantity * price;
+    const discountAmount = subtotal * (discount / 100);
+    const taxableAmount = subtotal - discountAmount;
+    return taxableAmount * (1 + taxAmount / 100);
+  }
+
+  const handleFieldBlur = (id: number, field: 'price' | 'total') => {
+    setItems(items.map(item => {
+      if (item.id === id) {
+        const value = parseFloat(item.editingPrice) || 0;
+        const newTotal = calculateLineTotal(item.quantity, value, item.taxAmount, item.discount);
+
+        return {
+          ...item,
+          price: value,
+          editingTotal: newTotal.toFixed(2)
+        };
+      }
+      return item;
+    }));
+  };
+
+  const handleQuantityChange = (id: number, value: string) => {
+    const quantity = parseFloat(value) || 0;
+    setItems(items.map(item => {
+      if (item.id === id) {
+        const newTotal = calculateLineTotal(quantity, item.price, item.taxAmount, item.discount);
+        return {
+          ...item,
+          quantity,
+          editingTotal: newTotal.toFixed(2)
+        };
+      }
+      return item;
+    }));
+  };
+
+  const handleTaxChange = (id: number, value: string) => {
+    const taxAmount = parseInt(value);
+    setItems(items.map(item => {
+      if (item.id === id) {
+        const newTotal = calculateLineTotal(item.quantity, item.price, taxAmount, item.discount);
+        return {
+          ...item,
+          taxAmount,
+          editingTotal: newTotal.toFixed(2)
+        };
+      }
+      return item;
+    }));
+  };
+
+  const handleDiscountChange = (id: number, value: string) => {
+    const discountValue = parseFloat(value) || 0;
+    setItems(items.map(item => {
+      if (item.id === id) {
+        const newTotal = calculateLineTotal(item.quantity, item.price, item.taxAmount, discountValue);
+        return {
+          ...item,
+          discount: discountValue,
+          editingTotal: newTotal.toFixed(2)
+        };
+      }
+      return item;
+    }));
+  };
+
+  const handlePriceChange = (id: number, value: string) => {
+    const price = parseFloat(value) || 0;
+    setItems(items.map(item => {
+      if (item.id === id) {
+        const newTotal = calculateLineTotal(item.quantity, price, item.taxAmount, item.discount);
+        return {
+          ...item,
+          editingPrice: value,
+          price: price,
+          editingTotal: newTotal.toFixed(2)
+        };
+      }
+      return item;
+    }));
+  };
+
+  const addItem = () => {
+    setItems([...items, createEmptyItem(items.length + 1)]);
+  };
+
+  const deleteItem = (id: number) => {
+    // Si es el primer item (id === 1), solo limpiamos sus campos
+    if (id === 1) {
+      setItems(items.map(item => 
+        item.id === 1 ? {
+          ...item,
+          concept: '',
+          description: '',
+          quantity: 1,
+          price: 0,
+          taxAmount: 21,
+          discount: 0,
+          editingPrice: '0',
+          editingTotal: '0'
+        } : item
+      ));
+    } else {
+      // Si no es el primer item, lo eliminamos
+      setItems(items.filter(item => item.id !== id));
     }
   };
 
@@ -447,7 +556,7 @@ export default function InvoiceGenerator() {
                       id="issueDate"
                       placeholder="Fecha de emisión"
                       value={invoiceData.issueDate}
-                      onChange={(e) => handleIssueDateChange(e.target.value)}
+                      onChange={(e) => setInvoiceData({ ...invoiceData, issueDate: e.target.value })}
                     />
                     <label htmlFor="issueDate">Fecha de emisión</label>
                   </Form.Floating>
@@ -762,14 +871,18 @@ export default function InvoiceGenerator() {
                       <Form.Control
                         type="text"
                         value={item.concept}
-                        onChange={(e) => updateItemField(item.id, 'concept', e.target.value)}
+                        onChange={(e) => setItems(items.map(i => 
+                          i.id === item.id ? { ...i, concept: e.target.value } : i
+                        ))}
                       />
                     </td>
                     <td>
                       <Form.Control
                         type="text"
                         value={item.description}
-                        onChange={(e) => updateItemField(item.id, 'description', e.target.value)}
+                        onChange={(e) => setItems(items.map(i => 
+                          i.id === item.id ? { ...i, description: e.target.value } : i
+                        ))}
                       />
                     </td>
                     <td>
@@ -787,7 +900,7 @@ export default function InvoiceGenerator() {
                         type="number"
                         className="text-end"
                         value={item.editingPrice}
-                        onChange={(e) => updateNumericField(item.id, 'editingPrice', e.target.value, 'total')}
+                        onChange={(e) => handlePriceChange(item.id, e.target.value)}
                         onBlur={() => handleFieldBlur(item.id, 'price')}
                         step="0.01"
                         min="0"
@@ -796,7 +909,7 @@ export default function InvoiceGenerator() {
                     <td>
                       <Form.Select
                         className="text-end"
-                        value={item.tax}
+                        value={item.taxAmount}
                         onChange={(e) => handleTaxChange(item.id, e.target.value)}
                       >
                         <option value="0">0%</option>
@@ -811,7 +924,7 @@ export default function InvoiceGenerator() {
                           type="number"
                           className="text-end"
                           value={item.discount}
-                          onChange={(e) => handleLineDiscountChange(item.id, e.target.value)}
+                          onChange={(e) => handleDiscountChange(item.id, e.target.value)}
                           step="0.01"
                           min="0"
                           max="100"
@@ -820,13 +933,10 @@ export default function InvoiceGenerator() {
                     )}
                     <td>
                       <Form.Control
-                        type="number"
+                        type="text"
                         className="text-end"
                         value={item.editingTotal}
-                        onChange={(e) => updateNumericField(item.id, 'editingTotal', e.target.value, 'price')}
-                        onBlur={() => handleFieldBlur(item.id, 'total')}
-                        step="0.01"
-                        min="0"
+                        readOnly
                       />
                     </td>
                     <td>
@@ -897,73 +1007,88 @@ export default function InvoiceGenerator() {
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Check
-                    id="line-discounts-checkbox"
-                    type="checkbox"
-                    label="Descuento por línea"
-                    checked={showLineDiscounts}
-                    onChange={(e) => handleShowLineDiscountsChange(e.target.checked)}
-                  />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Check
-                    id="global-discount-checkbox"
-                    type="checkbox"
-                    label="Descuento global"
-                    checked={showGlobalDiscount}
-                    onChange={(e) => setShowGlobalDiscount(e.target.checked)}
-                  />
-                  {showGlobalDiscount && (
-                    <div className="mt-2">
-                      <div className="d-flex gap-2 align-items-center">
-                        <Form.Control
-                          type="number"
-                          value={discount.amount}
-                          onChange={(e) => setDiscount({
-                            ...discount,
-                            amount: parseFloat(e.target.value) || 0
-                          })}
-                          min="0"
-                          step="0.01"
-                          style={{ width: '100px' }}
-                        />
-                        <Form.Select
-                          value={discount.type}
-                          onChange={(e) => setDiscount({
-                            ...discount,
-                            type: e.target.value as 'fixed' | 'percentage'
-                          })}
-                          style={{ width: '120px' }}
-                        >
-                          <option value="fixed">€</option>
-                          <option value="percentage">%</option>
-                        </Form.Select>
-                      </div>
-                    </div>
-                  )}
-                </Form.Group>
                 <Table borderless>
                   <tbody>
                     <tr>
-                      <th>Subtotal:</th>
-                      <td className="text-end">{subtotal.toFixed(2)}€</td>
+                      <th>Subtotal sin descuento:</th>
+                      <td className="text-end">{calculations.subtotalWithoutDiscount.toFixed(2)}€</td>
                     </tr>
-                    {showGlobalDiscount && calculatedGlobalDiscountAmount > 0 && (
-                      <tr>
-                        <th>
-                          Descuento {discount.type === 'percentage' ? `(${discount.amount}%)` : 'global'}:
-                        </th>
-                        <td className="text-end">-{calculatedGlobalDiscountAmount.toFixed(2)}€</td>
-                      </tr>
-                    )}
                     <tr>
-                      <th>IVA:</th>
-                      <td className="text-end">{taxAmount.toFixed(2)}€</td>
+                      <th>
+                        <Form.Check
+                          id="line-discounts-checkbox"
+                          type="checkbox"
+                          label="Descuento por línea"
+                          checked={showLineDiscounts}
+                          onChange={(e) => handleShowLineDiscountsChange(e.target.checked)}
+                        />
+                      </th>
+                      <td className="text-end">
+                        {calculations.productDiscountAmount > 0 ? 
+                          `-${calculations.productDiscountAmount.toFixed(2)}€` : 
+                          '0,00€'
+                        }
+                      </td>
                     </tr>
+                    <tr>
+                      <th>
+                        <div className="d-flex align-items-center gap-2">
+                          <Form.Check
+                            id="global-discount-checkbox"
+                            type="checkbox"
+                            label="Descuento global"
+                            checked={showGlobalDiscount}
+                            onChange={(e) => handleShowGlobalDiscountChange(e.target.checked)}
+                          />
+                          {showGlobalDiscount && (
+                            <>
+                              <Form.Control
+                                type="number"
+                                value={discount.amount}
+                                onChange={(e) => setDiscount({
+                                  ...discount,
+                                  amount: parseFloat(e.target.value) || 0
+                                })}
+                                min="0"
+                                step="0.01"
+                                size="sm"
+                                style={{ width: '80px' }}
+                              />
+                              <Form.Select
+                                value={discount.type}
+                                onChange={(e) => setDiscount({
+                                  ...discount,
+                                  type: e.target.value as 'fixed' | 'percentage'
+                                })}
+                                size="sm"
+                                style={{ width: '60px' }}
+                              >
+                                <option value="percentage">%</option>
+                                <option value="fixed">€</option>
+                              </Form.Select>
+                            </>
+                          )}
+                        </div>
+                      </th>
+                      <td className="text-end">
+                        {showGlobalDiscount && calculations.globalDiscountAmount > 0 && 
+                          `-${calculations.globalDiscountAmount.toFixed(2)}€`
+                        }
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Subtotal:</th>
+                      <td className="text-end">{calculations.subtotal.toFixed(2)}€</td>
+                    </tr>
+                    {Object.entries(calculations.taxBreakdown).map(([taxRate, tax]) => (
+                      <tr key={taxRate}>
+                        <th>IVA ({taxRate}%):</th>
+                        <td className="text-end">{tax.amount.toFixed(2)}€</td>
+                      </tr>
+                    ))}
                     <tr className="fw-bold">
                       <th>Total:</th>
-                      <td className="text-end">{total.toFixed(2)}€</td>
+                      <td className="text-end">{calculations.total.toFixed(2)}€</td>
                     </tr>
                   </tbody>
                 </Table>
@@ -983,13 +1108,29 @@ export default function InvoiceGenerator() {
         >
           Generar factura
         </Button>
-        <Button 
-          variant="outline-secondary" 
-          size="lg"
-          onClick={handleReset}
-        >
-          Reiniciar factura
-        </Button>
+        <ButtonGroup size="lg">
+          <Button 
+            variant="outline-secondary" 
+            onClick={handleReset}
+          >
+            Reiniciar factura
+          </Button>
+          <Dropdown as={ButtonGroup}>
+            <Dropdown.Toggle 
+              split 
+              variant="outline-secondary"
+              id="dropdown-split-basic"
+            />
+            <Dropdown.Menu align="end">
+              <Dropdown.Item 
+                onClick={handleResetAll}
+                className="text-danger"
+              >
+                Reiniciar todo el formulario
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </ButtonGroup>
       </div>
 
       {/* Modal de previsualización */}
@@ -1041,12 +1182,13 @@ export default function InvoiceGenerator() {
               company={company}
               customer={customer}
               items={items}
+              showLineDiscounts={showLineDiscounts}
               showGlobalDiscount={showGlobalDiscount}
-              globalDiscount={calculatedGlobalDiscountAmount}
               headerText={headerText}
               showHeaderText={showHeaderText}
               footerText={footerText}
               showFooterText={showFooterText}
+              calculations={calculations}
             />
           </div>
         </Modal.Body>
@@ -1054,7 +1196,7 @@ export default function InvoiceGenerator() {
           <Button variant="outline-secondary" onClick={() => setShowTemplateModal(false)}>
             Cerrar
           </Button>
-          <Button variant="primary" onClick={() =>handlePrint}>
+          <Button variant="primary" onClick={() => handlePrint()}>
             Imprimir
           </Button>
         </Modal.Footer>

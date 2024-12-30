@@ -1,49 +1,19 @@
 import React from 'react';
 import { InvoiceTemplateProps } from './types';
 
-export const ModernTemplate: React.FC<InvoiceTemplateProps> = (props) => {
-  const {
-    invoiceData,
-    company,
-    customer,
-    items,
-    showGlobalDiscount,
-    globalDiscount,
-    showHeaderText,
-    headerText,
-    showFooterText,
-    footerText
-  } = props;
-
-  const calculateSubtotal = () => {
-    return items.reduce((acc, item) => {
-      const lineSubtotal = item.quantity * item.price;
-      const lineDiscount = lineSubtotal * (item.discount / 100);
-      return acc + (lineSubtotal - lineDiscount);
-    }, 0);
-  };
-
-  const calculateTaxes = () => {
-    return items.reduce((acc, item) => {
-      const lineSubtotal = item.quantity * item.price;
-      const lineDiscount = lineSubtotal * (item.discount / 100);
-      const baseTaxable = lineSubtotal - lineDiscount;
-      return acc + (baseTaxable * (item.tax / 100));
-    }, 0);
-  };
-
-  const calculateTotal = () => {
-    const subtotal = calculateSubtotal();
-    const taxes = calculateTaxes();
-    let total = subtotal + taxes;
-    
-    if (showGlobalDiscount) {
-      total = total * (1 - (globalDiscount ?? 0) / 100);
-    }
-    
-    return total;
-  };
-
+export const ModernTemplate: React.FC<InvoiceTemplateProps> = ({
+  invoiceData,
+  company,
+  customer,
+  items,
+  calculations,
+  showLineDiscounts,
+  showGlobalDiscount,
+  headerText,
+  showHeaderText,
+  footerText,
+  showFooterText,
+}) => {
   return (
     <div className="modern-template invoice-template p-2" style={{ background: '#f8f9fa' }}>
       {showHeaderText && headerText && (
@@ -118,23 +88,29 @@ export const ModernTemplate: React.FC<InvoiceTemplateProps> = (props) => {
                 <th className="text-end">Cantidad</th>
                 <th className="text-end">Precio</th>
                 <th className="text-end">IVA</th>
+                {showLineDiscounts && <th className="text-end">Dto.</th>}
                 <th className="text-end">Total</th>
               </tr>
             </thead>
             <tbody>
               {items.map((item) => {
-                const subtotal = item.quantity * item.price;
-                const tax = subtotal * (item.tax / 100);
-                const total = subtotal + tax;
+                const lineSubtotal = item.quantity * item.price;
+                const lineDiscount = lineSubtotal * (item.discount / 100);
+                const lineTaxableAmount = lineSubtotal - lineDiscount;
+                const lineTaxAmount = lineTaxableAmount * (item.taxAmount / 100);
+                const lineTotal = lineTaxableAmount + lineTaxAmount;
 
                 return (
                   <tr key={item.id}>
                     <td className="fw-bold">{item.concept}</td>
                     <td className="text-muted">{item.description}</td>
                     <td className="text-end">{item.quantity}</td>
-                    <td className="text-end">{item.price.toFixed(2)} €</td>
-                    <td className="text-end">{item.tax}%</td>
-                    <td className="text-end fw-bold">{total.toFixed(2)} €</td>
+                    <td className="text-end">{item.price.toFixed(2)}€</td>
+                    <td className="text-end">{item.taxAmount}%</td>
+                    {showLineDiscounts && (
+                      <td className="text-end">{item.discount > 0 ? `${item.discount}%` : '-'}</td>
+                    )}
+                    <td className="text-end">{lineTotal.toFixed(2)}€</td>
                   </tr>
                 );
               })}
@@ -143,27 +119,42 @@ export const ModernTemplate: React.FC<InvoiceTemplateProps> = (props) => {
         </div>
 
         <div className="row justify-content-end mt-4">
-          <div className="col-md-5 col-lg-4">
+          <div className="col-md-5">
             <div className="bg-light p-3 rounded-3">
               <div className="d-flex justify-content-between mb-2">
-                <span className="text-muted">Base imponible</span>
-                <span>{calculateSubtotal().toFixed(2)} €</span>
+                <span className="text-muted">Base imponible:</span>
+                <span className="fw-bold">{calculations.subtotalWithoutDiscount.toFixed(2)}€</span>
               </div>
-              <div className="d-flex justify-content-between mb-2">
-                <span className="text-muted">IVA</span>
-                <span>{calculateTaxes().toFixed(2)} €</span>
-              </div>
-              {showGlobalDiscount && (
+
+              {calculations.productDiscountAmount > 0 && (
                 <div className="d-flex justify-content-between mb-2">
-                  <span className="text-muted">Descuento global</span>
-                  <span className="text-danger">-{(globalDiscount ?? 0).toFixed(2)} €</span>
+                  <span className="text-muted">Descuento por líneas:</span>
+                  <span className="text-danger">-{calculations.productDiscountAmount.toFixed(2)}€</span>
                 </div>
               )}
-              <div className="d-flex justify-content-between pt-2 border-top mt-2">
-                <span className="fw-bold">Total</span>
-                <span className="fw-bold" style={{ color: '#007bff', fontSize: '1.2em' }}>
-                  {calculateTotal().toFixed(2)} €
-                </span>
+
+              {showGlobalDiscount && calculations.globalDiscountAmount > 0 && (
+                <div className="d-flex justify-content-between mb-2">
+                  <span className="text-muted">Descuento global:</span>
+                  <span className="text-danger">-{calculations.globalDiscountAmount.toFixed(2)}€</span>
+                </div>
+              )}
+
+              <div className="d-flex justify-content-between mb-2">
+                <span className="text-muted">Subtotal:</span>
+                <span className="fw-bold">{calculations.subtotal.toFixed(2)}€</span>
+              </div>
+
+              {Object.entries(calculations.taxBreakdown).map(([rate, tax]) => (
+                <div key={rate} className="d-flex justify-content-between mb-2">
+                  <span className="text-muted">IVA ({rate}%):</span>
+                  <span className="fw-bold">{tax.amount.toFixed(2)}€</span>
+                </div>
+              ))}
+
+              <div className="d-flex justify-content-between mt-3 pt-3 border-top">
+                <span className="h5 mb-0">Total:</span>
+                <span className="h5 mb-0 text-primary">{calculations.total.toFixed(2)}€</span>
               </div>
             </div>
           </div>
@@ -171,7 +162,7 @@ export const ModernTemplate: React.FC<InvoiceTemplateProps> = (props) => {
       </div>
 
       {showFooterText && footerText && (
-        <div className="footer-text mt-4 p-3 bg-white rounded-3 shadow-sm text-muted" style={{ whiteSpace: 'pre-line', fontSize: '0.9em' }}>
+        <div className="footer-text mt-4 text-muted" style={{ whiteSpace: 'pre-line', borderLeft: '4px solid #007bff', paddingLeft: '1rem' }}>
           {footerText}
         </div>
       )}

@@ -1,7 +1,7 @@
 import { ClassicTemplate } from '../templates/classic';
 import { ModernTemplate } from '../templates/modern';
 import { MinimalistTemplate } from '../templates/minimalist';
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 export const templates = {
@@ -20,7 +20,7 @@ export const generatePDF = async (element: HTMLElement): Promise<Blob> => {
     format: 'a4'
   });
 
-  const imgProps = pdf.getImageProperties(imgData);
+  const imgProps = pdf.internal.getImageInfo(imgData);
   const pdfWidth = pdf.internal.pageSize.getWidth();
   const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
   
