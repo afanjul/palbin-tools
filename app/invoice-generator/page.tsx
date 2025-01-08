@@ -193,6 +193,8 @@ export default function InvoiceGenerator() {
       setShowLineDiscounts(data.showLineDiscounts);
       setShowHeaderText(data.showHeaderText);
       setShowFooterText(data.showFooterText);
+      setHeaderText(data.headerText || '');
+      setFooterText(data.footerText || '');
     }
   }, []);
 
@@ -205,10 +207,12 @@ export default function InvoiceGenerator() {
       discount,
       showLineDiscounts,
       showHeaderText,
-      showFooterText
+      showFooterText,
+      headerText,
+      footerText
     };
     localStorage.setItem('invoiceGeneratorData', JSON.stringify(dataToSave));
-  }, [invoiceData, company, customer, items, discount, showLineDiscounts, showHeaderText, showFooterText]);
+  }, [invoiceData, company, customer, items, discount, showLineDiscounts, showHeaderText, showFooterText, headerText, footerText]);
 
   const handleReset = () => {
     if (typeof window !== 'undefined') {
@@ -1113,7 +1117,7 @@ export default function InvoiceGenerator() {
             variant="outline-secondary" 
             onClick={handleReset}
           >
-            Reiniciar factura
+            Nueva Factura
           </Button>
           <Dropdown as={ButtonGroup}>
             <Dropdown.Toggle 
