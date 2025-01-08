@@ -20,9 +20,11 @@ export const generatePDF = async (element: HTMLElement): Promise<Blob> => {
     format: 'a4'
   });
 
-  const imgProps = pdf.internal.getImageInfo(imgData);
+  // Get image dimensions from canvas directly
+  const imgWidth = canvas.width;
+  const imgHeight = canvas.height;
   const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
   
   pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
   
