@@ -11,13 +11,9 @@ export default function RootLayoutClient({
   return (
     <div className="d-flex flex-column min-vh-100">
       <MainNavbar />
-      <Container className="container py-5 py-lg-6">
-        <Row>
-          <Col>
-            {children}
-          </Col>
-        </Row>
-      </Container>
+      <div className="pt-5 pt-lg-6">
+        {children}
+      </div>
       <footer className="footer mt-auto py-3 bg-dark text-light">
         <Container className="text-center">
           <span>Made by Palbin.com with ❤️</span>

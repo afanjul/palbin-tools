@@ -144,156 +144,178 @@ export default function ImageCompressor() {
   })
 
   return (
-    <Container className="py-4">
-      <Row className="mb-4">
-        <Col>
-          <h1 className="text-center">Image Compressor</h1>
-          <p className="text-center text-muted">
-            Optimize your images using TinyPNG compression
+    <div className="wrapper">
+      <div className="tool-ui">
+        <Container>
+          <h1 className="text-center mb-4">Comprimir imagen online</h1>
+          <p className="lead">
+            Con esta herramienta puedes <strong>comprimir fotos manteniendo la calidad</strong> de imagen de forma sencilla. Bien lo necesites para ahorrar espacio en tu disco duro o mejorar la velocidad de carga de tu página, comprimir imágenes es la solución.
           </p>
-        </Col>
-      </Row>
-
-      <Row className="mb-4">
-        <Col>
-          <Form.Group>
-            <Form.Label className="d-flex justify-content-between align-items-center">
-              <span>Tinify - API Key</span>
-              <a 
-                href="https://tinypng.com/developers" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-danger text-decoration-none"
-              >
-                <small>Get your API key <i className="bi bi-box-arrow-up-right"></i></small>
-              </a>
-            </Form.Label>
-            <Form.Control
-              type="text"
-              value={apiKey}
-              onChange={(e) => handleApiKeyChange(e.target.value)}
-              placeholder="Enter your TinyPNG API key"
-            />
-            <Form.Text className="text-muted">
-              Using default API key. Get your own key for better reliability.
-            </Form.Text>
-          </Form.Group>
-        </Col>
-      </Row>
-
-      {!originalImage ? (
-        <Row className="mb-4">
-          <Col>
-            <Card 
-              {...getRootProps()} 
-              className={`text-center p-5`}
-              style={{ cursor: 'pointer' }}
-            >
-              <input {...getInputProps()} />
-              <Card.Body>
-                <i className="bi bi-cloud-upload display-1 mb-3"></i>
-                <p>
-                  Drag &apos;n&apos; drop an image here, or click to select
-                </p>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      ) : (
-        <>
-          
           <Row className="mb-4">
             <Col>
-              {originalImage && compressedImage && (
-                <CompareImage
-                  leftImage={originalImage}
-                  rightImage={compressedImage}
-                  sliderLineColor="#dc3545"
+              <Form.Group>
+                <Form.Label className="d-flex justify-content-between align-items-center">
+                  <span>Tinify - API Key</span>
+                  <a
+                    href="https://tinypng.com/developers"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-danger text-decoration-none"
+                  >
+                    <small>Get your API key <i className="bi bi-box-arrow-up-right"></i></small>
+                  </a>
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  value={apiKey}
+                  onChange={(e) => handleApiKeyChange(e.target.value)}
+                  placeholder="Enter your TinyPNG API key"
                 />
-              )}
-              {isCompressing && (
-                <div className="text-center mt-3">
-                  <div className="spinner-border text-danger" role="status">
-                    <span className="visually-hidden">Compressing...</span>
-                  </div>
-                  <p className="text-muted mt-2">Compressing image...</p>
-                </div>
-              )}
-            </Col>
-          </Row>
-          
-          <Row className="mb-4">
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Resize Method</Form.Label>
-                <Form.Select
-                  value={resizeMethod}
-                  onChange={(e) => setResizeMethod(e.target.value as ResizeOptions['method'])}
-                >
-                  {/* <option value="scale">Scale (proportional)</option> */}
-                  <option value="fit">Fit (within dimensions)</option>
-                  <option value="cover">Crop (crop to fit)</option>
-                  <option value="thumb">Thumb (intelligent crop)</option>
-                </Form.Select>
                 <Form.Text className="text-muted">
-                  {resizeMethod === 'scale' 
-                    ? 'Provide either width or height to scale proportionally'
-                    : 'Provide both width and height'}
+                  Using default API key. Get your own key for better reliability.
                 </Form.Text>
               </Form.Group>
             </Col>
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label>Width (px)</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={width}
-                  onChange={(e) => setWidth(Number(e.target.value))}
-                  disabled={resizeMethod === 'scale' && height !== undefined}
-                />
-              </Form.Group>
-            </Col>
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label>Height (px)</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={height}
-                  onChange={(e) => setHeight(Number(e.target.value))}
-                  disabled={resizeMethod === 'scale' && width !== undefined}
-                />
-              </Form.Group>
-            </Col>
           </Row>
-
-          <Row>
-            <Col className="d-flex gap-3 justify-content-center">
-              <Button 
-                variant="danger" 
-                onClick={downloadResized}
-                disabled={isCompressing || !compressedImage}
-              >
-                <i className="bi bi-download me-2"></i>
-                Download Resized Image
-              </Button>
-              <Button 
-                variant="outline-secondary" 
-                onClick={() => {
-                  setOriginalImage(null)
-                  setCompressedImage(null)
-                  setCompressedImageUrl(null)
-                  setOriginalDimensions(null)
-                  setOriginalFilename(null)
-                }}
-                disabled={isCompressing}
-              >
-                <i className="bi bi-arrow-counterclockwise me-2"></i>
-                Upload New Image
-              </Button>
-            </Col>
-          </Row>
-        </>
-      )}
-    </Container>
+          {!originalImage ? (
+            <Row className="mb-4">
+              <Col>
+                <Card
+                  {...getRootProps()}
+                  className="text-center p-5"
+                  style={{ cursor: 'pointer' }}
+                >
+                  <input {...getInputProps()} />
+                  <Card.Body>
+                    <i className="bi bi-cloud-upload display-1 mb-3"></i>
+                    <p>
+                      Drag &apos;n&apos; drop an image here, or click to select
+                    </p>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          ) : (
+            <>
+        
+              <Row className="mb-4">
+                <Col>
+                  {originalImage && compressedImage && (
+                    <CompareImage
+                      leftImage={originalImage}
+                      rightImage={compressedImage}
+                      sliderLineColor="#dc3545"
+                    />
+                  )}
+                  {isCompressing && (
+                    <div className="text-center mt-3">
+                      <div className="spinner-border text-danger" role="status">
+                        <span className="visually-hidden">Compressing...</span>
+                      </div>
+                      <p className="text-muted mt-2">Compressing image...</p>
+                    </div>
+                  )}
+                </Col>
+              </Row>
+        
+              <Row className="mb-4">
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Resize Method</Form.Label>
+                    <Form.Select
+                      value={resizeMethod}
+                      onChange={(e) => setResizeMethod(e.target.value as ResizeOptions['method'])}
+                    >
+                      {/* <option value="scale">Scale (proportional)</option> */}
+                      <option value="fit">Fit (within dimensions)</option>
+                      <option value="cover">Crop (crop to fit)</option>
+                      <option value="thumb">Thumb (intelligent crop)</option>
+                    </Form.Select>
+                    <Form.Text className="text-muted">
+                      {resizeMethod === 'scale'
+                        ? 'Provide either width or height to scale proportionally'
+                        : 'Provide both width and height'}
+                    </Form.Text>
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Width (px)</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={width}
+                      onChange={(e) => setWidth(Number(e.target.value))}
+                      disabled={resizeMethod === 'scale' && height !== undefined}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={3}>
+                  <Form.Group>
+                    <Form.Label>Height (px)</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={height}
+                      onChange={(e) => setHeight(Number(e.target.value))}
+                      disabled={resizeMethod === 'scale' && width !== undefined}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Row>
+                <Col className="d-flex gap-3 justify-content-center">
+                  <Button
+                    variant="danger"
+                    onClick={downloadResized}
+                    disabled={isCompressing || !compressedImage}
+                  >
+                    <i className="bi bi-download me-2"></i>
+                    Download Resized Image
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
+                    onClick={() => {
+                      setOriginalImage(null)
+                      setCompressedImage(null)
+                      setCompressedImageUrl(null)
+                      setOriginalDimensions(null)
+                      setOriginalFilename(null)
+                    }}
+                    disabled={isCompressing}
+                  >
+                    <i className="bi bi-arrow-counterclockwise me-2"></i>
+                    Upload New Image
+                  </Button>
+                </Col>
+              </Row>
+            </>
+          )}
+        </Container>
+      </div>
+      <div className="tool-description bg-light py-5 mt-5">
+        <Container>
+          <h2 className="h4 mt-4">Cómo comprimir fotos online</h2>
+          <p>
+            Utilizar esta herramienta es gratuito y sencillo. Tan sólo arrastra o selecciona la imagen que necesitas comprimir e introduce tus preferencias para llevar a cabo la compresión.
+          </p>
+          <p>
+            Puedes escoger si deseas cambiar el tamaño de la imagen para reducir o ampliar su altura (height) o anchura (width). En caso de hacerlo, puedes seleccionar entre las opciones:
+          </p>
+          <ul>
+            <li><strong>Fit</strong>: Ajusta la imagen a la anchura y/o altura escogida.</li>
+            <li><strong>Crop</strong>: Recorta la imagen al tamaño seleccionado. Si la anchura es de 1000px y seleccionamos una anchura de 800px, la herramienta eliminará 200px del ancho de la imagen.</li>
+            <li><strong>Thumb</strong>: Recorta la imagen al tamaño seleccionado, pero realiza un recorte inteligente para identificar y no eliminar los elementos importantes de la imagen.</li>
+          </ul>
+          <h2 className="h4 mt-4">¿Por qué comprimir imágenes para una tienda online?</h2>
+          <p>
+            Optimizar las imágenes de tu tienda para reducir su peso va a <strong>mejorar la velocidad de carga</strong>. Al reducir esta, mejoramos la experiencia del usuario en nuestra web y facilitamos la accesibilidad a la misma. También aumenta el rendimiento en móviles, principal dispositivo de compra. Recuerda, un usuario frustrado no comprará en tu ecommerce.
+          </p>
+          
+          <h2 className="h4 mt-4">¿Por qué reducir el tamaño de una imagen png?</h2>
+          <p>
+            Aunque las imágenes en formato .png tienen muy buena calidad, también <strong>ocupan una buena cantidad de memoria</strong>. Si queremos utilizar estas imágenes en una página web o tienda online, o si simplemente nos gustaría ahorrar espacio en nuestro disco duro o en el servidor en el que las almacenemos, debemos reducir el tamaño de las imágenes.
+          </p>
+        </Container>
+      </div>
+    </div>
   )
 }
