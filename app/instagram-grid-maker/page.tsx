@@ -134,7 +134,7 @@ export default function InstagramGridMaker() {
             Posteriormente, podrás <strong>seleccionar entre <em>Grid</em></strong> (cuadrícula, se generan imágenes con la misma altura que anchura, en formato cuadrado, con columnas y filas) <strong>o <em>Carrousel</em></strong> (carrusel, se corta la imagen en varias columnas). También podrás seleccionar el <strong>número de columnas</strong> que necesitas, hasta un máximo de 6.
           </p>
           <p>
-            Una vez escogidas tus preferencias, tan sólo tienes que clicar el botón "Descargar Zip" y descargar el archivo comprimido (que podrás abrir con programas tipo WinRar o 7Zip). Las imágenes se generan con el mismo formato de la imagen original, manteniendo siempre la mayor calidad posible.
+            Una vez escogidas tus preferencias, tan sólo tienes que clicar el botón &ldquo;Descargar Zip&rdquo; y descargar el archivo comprimido (que podrás abrir con programas tipo WinRar o 7Zip). Las imágenes se generan con el mismo formato de la imagen original, manteniendo siempre la mayor calidad posible.
           </p>
 
           <h2 className="h4 mt-4">¿Qué tamaño de fotos necesito usar en Instagram?</h2>
