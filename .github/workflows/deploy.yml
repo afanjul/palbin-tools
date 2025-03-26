@@ -47,7 +47,8 @@ jobs:
           # Load environment variables and paths
           source ~/.bashrc
           source ~/.profile
-          git pull origin main
+          cd /opt/apps/palbin-tools
+          git pull
           npm ci --production
           npm run build
           pm2 restart palbin-tools
