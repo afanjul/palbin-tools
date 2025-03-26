@@ -55,6 +55,13 @@ jobs:
           # Update code
           git pull
           
+          # Add node to PATH
+          export PATH="/home/siokia/.nvm/versions/node/v23.10.0/bin:$PATH"
+          
+          # Make sure Node.js is available
+          which node
+          echo "Node version: $(node -v)"
+          
           # Use absolute paths to npm and pm2
           /home/siokia/.nvm/versions/node/v23.10.0/bin/npm ci --production
           /home/siokia/.nvm/versions/node/v23.10.0/bin/npm run build
