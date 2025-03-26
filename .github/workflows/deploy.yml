@@ -63,7 +63,7 @@ jobs:
           echo "Node version: $(node -v)"
           
           # Use absolute paths to npm and pm2
-          /home/siokia/.nvm/versions/node/v23.10.0/bin/npm ci --production
+          /home/siokia/.nvm/versions/node/v23.10.0/bin/npm ci --omit=dev
           /home/siokia/.nvm/versions/node/v23.10.0/bin/npm run build
           /home/siokia/.nvm/versions/node/v23.10.0/bin/pm2 restart palbin-tools
           

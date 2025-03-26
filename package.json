@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.7",
+    "@openrouter/ai-sdk-provider": "^0.0.6",
     "@react-pdf/renderer": "^3.3.4",
     "@types/file-saver": "^2.0.7",
     "@types/jszip": "^3.4.0",
@@ -37,7 +38,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@openrouter/ai-sdk-provider": "^0.0.6",
     "@types/iso-3166-2": "^1.0.3",
     "@types/jspdf": "^1.3.3",
     "@types/node": "^20",
