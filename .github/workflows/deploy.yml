@@ -22,6 +22,12 @@ jobs:
     - name: Build application
       run: npm run build
       
+    - name: Debug SSH Key
+      run: |
+        echo "Checking SSH key format..."
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | grep -q "BEGIN OPENSSH PRIVATE KEY" && echo "Key format looks correct" || echo "Key format might be incorrect"
+        echo "Key length: $(echo "${{ secrets.SSH_PRIVATE_KEY }}" | wc -l) lines"
+      
     - name: Deploy to production server
       uses: appleboy/ssh-action@master
       with:
@@ -29,6 +35,7 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          echo "Starting deployment..."
           cd /opt/apps/palbin-tools
           git pull origin main
           npm ci --production
