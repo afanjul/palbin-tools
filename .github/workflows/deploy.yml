@@ -33,6 +33,6 @@ jobs:
           source ~/.bashrc
           cd /opt/apps/palbin-tools
           /usr/bin/git pull origin main
-          /usr/bin/npm ci
-          /usr/bin/npm run build
-          /usr/bin/pm2 restart palbin-tools 
+          /home/siokia/.nvm/versions/node/v23.10.0/bin/npm ci
+          /home/siokia/.nvm/versions/node/v23.10.0/bin/npm run build
+          /home/siokia/.nvm/versions/node/v23.10.0/bin/pm2 restart palbin-tools 
