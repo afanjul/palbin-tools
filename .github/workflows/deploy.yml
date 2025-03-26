@@ -9,16 +9,16 @@ jobs:
     runs-on: ubuntu-22.04
     
     steps:
-    - name: Deploy to production server
-      uses: appleboy/ssh-action@master
+    - name: Install SSH Key
+      uses: webfactory/ssh-agent@v0.8.0
       with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script_stop: true
-        script: |
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        
+    - name: Test SSH Connection
+      run: |
+        ssh -v -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} '
           echo "Testing SSH connection..."
           echo "Current directory: $(pwd)"
           echo "User: $(whoami)"
           echo "SSH connection successful!"
+        '
