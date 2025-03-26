@@ -30,8 +30,9 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         script_stop: true
         script: |
+          source ~/.bashrc
           cd /opt/apps/palbin-tools
-          git pull origin main
-          npm ci
-          npm run build
-          pm2 restart palbin-tools 
+          /usr/bin/git pull origin main
+          /usr/bin/npm ci
+          /usr/bin/npm run build
+          /usr/bin/pm2 restart palbin-tools 
