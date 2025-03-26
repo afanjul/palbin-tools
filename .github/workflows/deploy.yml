@@ -44,7 +44,9 @@ jobs:
         port: 137
         script: |
           echo "Starting deployment..."
-          cd /opt/apps/palbin-tools
+          # Load environment variables and paths
+          source ~/.bashrc
+          source ~/.profile
           git pull origin main
           npm ci --production
           npm run build
