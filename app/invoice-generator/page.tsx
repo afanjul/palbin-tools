@@ -8,6 +8,10 @@ import { ItemsTable } from "./components/ItemsTable";
 import { InvoicePreview } from "./components/InvoicePreview";
 import { InvoiceData, Address, Item, InvoiceCalculations, Discount } from "./types";
 import { createEmptyItem, calculateInvoiceData } from "./utils";
+import { 
+  saveAddressToHistory, 
+  getAddressesHistory
+} from './services/addressesHistory';
 
 export default function InvoiceGenerator() {
   const [company, setCompany] = useState<Address>(() => {
@@ -112,7 +116,13 @@ export default function InvoiceGenerator() {
   const handlePrint = useReactToPrint({
     contentRef: printRef,
     onAfterPrint: () => {
-      // setShowTemplateModal(false);
+      // Guardar tanto el emisor como el receptor en el historial después de imprimir
+      if (company.name.trim()) {
+        saveAddressToHistory(company, 'emitter');
+      }
+      if (customer.name.trim()) {
+        saveAddressToHistory(customer, 'customer');
+      }
     },
     onPrintError: (error) => {
       console.error("Error printing:", error);
@@ -121,63 +131,75 @@ export default function InvoiceGenerator() {
   });
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("invoiceData", JSON.stringify(invoiceData));
-      localStorage.setItem("companyData", JSON.stringify(company));
-      localStorage.setItem("customerData", JSON.stringify(customer));
-    }
-  }, [invoiceData, company, customer]);
-
-  useEffect(() => {
     const savedData = localStorage.getItem("invoiceGeneratorData");
     if (savedData) {
       const data = JSON.parse(savedData);
       setInvoiceData(data.invoiceData);
       setCompany(data.company);
       setCustomer(data.customer);
-      setItems(data.items);
-      setDiscount(data.discount);
-      setShowLineDiscounts(data.showLineDiscounts);
-      setShowHeaderText(data.showHeaderText);
-      setShowFooterText(data.showFooterText);
+      setItems(data.items || [createEmptyItem(1)]);
+      setDiscount(data.discount || {
+        amount: 0,
+        type: "fixed",
+        showInDocument: true,
+      });
+      setShowLineDiscounts(data.showLineDiscounts || false);
+      setShowHeaderText(data.showHeaderText || false);
+      setShowFooterText(data.showFooterText || false);
       setHeaderText(data.headerText || "");
       setFooterText(data.footerText || "");
     }
   }, []);
 
+  // Asegurar que se inicializan los historiales de direcciones
   useEffect(() => {
-    const dataToSave = {
-      invoiceData,
-      company,
-      customer,
-      items,
-      discount,
-      showLineDiscounts,
-      showHeaderText,
-      showFooterText,
-      headerText,
-      footerText,
-    };
-    localStorage.setItem("invoiceGeneratorData", JSON.stringify(dataToSave));
-  }, [
-    invoiceData,
-    company,
-    customer,
-    items,
-    discount,
-    showLineDiscounts,
-    showHeaderText,
-    showFooterText,
-    headerText,
-    footerText,
-  ]);
+    // Inicializar ambos historiales
+    getAddressesHistory('emitter');
+    getAddressesHistory('customer');
+  }, []);
+
+  const saveAllData = () => {
+    if (typeof window !== "undefined") {
+      // Guardar datos individuales
+      localStorage.setItem("invoiceData", JSON.stringify(invoiceData));
+      localStorage.setItem("companyData", JSON.stringify(company));
+      localStorage.setItem("customerData", JSON.stringify(customer));
+
+      // Guardar todos los datos juntos
+      const dataToSave = {
+        invoiceData,
+        company,
+        customer,
+        items,
+        discount,
+        showLineDiscounts,
+        showHeaderText,
+        showFooterText,
+        headerText,
+        footerText,
+      };
+      localStorage.setItem("invoiceGeneratorData", JSON.stringify(dataToSave));
+    }
+  };
+
+  const handleGenerateInvoice = () => {
+    // Guardar todos los datos
+    saveAllData();
+    
+    // Guardar tanto el emisor como el receptor en el historial
+    if (company.name.trim()) {
+      saveAddressToHistory(company, 'emitter');
+    }
+    if (customer.name.trim()) {
+      saveAddressToHistory(customer, 'customer');
+    }
+    
+    // Mostrar el modal de plantillas
+    setShowTemplateModal(true);
+  };
 
   const handleReset = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("customerData");
-      localStorage.removeItem("invoiceData");
-    }
-
+    // No borrar nada del localStorage, solo resetear el estado
     setInvoiceData({
       series: "",
       number: "",
@@ -198,7 +220,7 @@ export default function InvoiceGenerator() {
       zipCode: "",
     });
 
-    setItems([]);
+    setItems([createEmptyItem(1)]);
     setShowGlobalDiscount(false);
     setDiscount({ type: "fixed", amount: 0, showInDocument: true });
     setShowHeaderText(false);
@@ -208,12 +230,6 @@ export default function InvoiceGenerator() {
   };
 
   const handleResetAll = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("customerData");
-      localStorage.removeItem("invoiceData");
-      localStorage.removeItem("companyData");
-    }
-
     handleReset();
 
     setCompany({
@@ -226,6 +242,19 @@ export default function InvoiceGenerator() {
       countryCode: "ES",
       zipCode: "",
     });
+  };
+
+  const handleFullReset = () => {
+    // Realizar el reset de memoria
+    handleResetAll();
+    
+    // Borrar también el localStorage
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("customerData");
+      localStorage.removeItem("invoiceData");
+      localStorage.removeItem("companyData");
+      localStorage.removeItem("invoiceGeneratorData");
+    }
   };
 
   const [calculations, setCalculations] = useState<InvoiceCalculations>(
@@ -269,13 +298,13 @@ export default function InvoiceGenerator() {
             <Dropdown as={ButtonGroup}>
               <Dropdown.Toggle split variant="outline-secondary" id="dropdown-split-basic" />
               <Dropdown.Menu align="end">
-                <Dropdown.Item onClick={handleResetAll} className="text-danger">
+                <Dropdown.Item onClick={handleFullReset} className="text-danger">
                   Reiniciar todo el formulario
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </ButtonGroup>
-          <Button variant="primary" size="lg" className="flex-grow-1" onClick={() => setShowTemplateModal(true)}>
+          <Button variant="primary" size="lg" className="flex-grow-1" onClick={handleGenerateInvoice}>
             Generar factura
           </Button>
         </div>

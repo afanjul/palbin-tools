@@ -2,6 +2,8 @@ import { Form, Row, Col, Card } from 'react-bootstrap';
 import { Address } from '../types';
 import countries from 'i18n-iso-countries';
 import es from 'i18n-iso-countries/langs/es.json';
+import { AddressAutocomplete } from './AddressAutocomplete';
+import { AddressType } from '../services/addressesHistory';
 
 // Initialize countries with Spanish locale
 countries.registerLocale(es);
@@ -13,24 +15,25 @@ interface AddressFormProps {
 }
 
 export function AddressForm({ title, address, onAddressChange }: AddressFormProps) {
+  // Determinar el tipo de dirección basado en el título
+  const addressType: AddressType = title.toLowerCase().includes('receptor') ? 'customer' : 'emitter';
+
   return (
     <Card>
       <Card.Body>
         <h5 className="mb-3">{title}</h5>
         <Row>
           <Col md={6}>
-            <Form.Floating className="mb-3">
-              <Form.Control
-                type="text"
+            <div className="mb-3">
+              <AddressAutocomplete 
                 id={`${title.toLowerCase()}Name`}
-                placeholder="Nombre/Razón Social"
                 value={address.name}
-                onChange={(e) =>
-                  onAddressChange({ ...address, name: e.target.value })
-                }
+                onChange={onAddressChange}
+                currentAddress={address}
+                label="Nombre/Razón Social"
+                addressType={addressType}
               />
-              <label htmlFor={`${title.toLowerCase()}Name`}>Nombre/Razón Social</label>
-            </Form.Floating>
+            </div>
           </Col>
           <Col md={6}>
             <Form.Floating className="mb-3">
