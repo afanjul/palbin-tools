@@ -44,14 +44,22 @@ jobs:
         port: 137
         script: |
           echo "Starting deployment..."
+          
           # Load environment variables and paths
           source ~/.bashrc
           source ~/.profile
+          
+          # Navigate to project
           cd /opt/apps/palbin-tools
+          
+          # Update code
           git pull
-          npm ci --production
-          npm run build
-          pm2 restart palbin-tools
+          
+          # Use absolute paths to npm and pm2
+          /home/siokia/.nvm/versions/node/v23.10.0/bin/npm ci --production
+          /home/siokia/.nvm/versions/node/v23.10.0/bin/npm run build
+          /home/siokia/.nvm/versions/node/v23.10.0/bin/pm2 restart palbin-tools
+          
           echo "Deployment completed successfully!"
           
     # - name: Update deployment status (success)
