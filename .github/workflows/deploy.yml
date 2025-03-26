@@ -1,24 +1,68 @@
-name: Test SSH Connection
+name: Deploy to Production
 
 on:
   push:
     branches: [ main ] 
 
 jobs:
-  test-ssh:
+  deploy:
+    name: Deploy palbin-tools
     runs-on: ubuntu-22.04
+    permissions:
+      deployments: write
     
     steps:
-    - name: Setup SSH Key
-      run: |
-        mkdir -p /home/runner/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/.ssh/deploy_key
-        chmod 600 /home/runner/.ssh/deploy_key
-        echo "Key format:"
-        ssh-keygen -l -f /home/runner/.ssh/deploy_key || echo "Key format issue"
-        echo "Key content first line:"
-        head -n 1 /home/runner/.ssh/deploy_key
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        ref: main
+    
+    - name: Create GitHub deployment
+      uses: chrnorm/deployment-action@v2
+      id: deployment
+      with:
+        token: '${{ github.token }}'
+        environment: production
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '23'
         
-    - name: Test SSH Connection
-      run: |
-        ssh -vvv -i /home/runner/.ssh/deploy_key -o StrictHostKeyChecking=no -p 137 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} 'echo "SSH connection successful!"'
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Deploy to production server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 137
+        script: |
+          echo "Starting deployment..."
+          cd /opt/apps/palbin-tools
+          git pull origin main
+          npm ci --production
+          npm run build
+          pm2 restart palbin-tools
+          echo "Deployment completed successfully!"
+          
+    - name: Update deployment status (success)
+      if: success()
+      uses: chrnorm/deployment-status@v2
+      with:
+        token: '${{ github.token }}'
+        state: 'success'
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      
+    - name: Update deployment status (failure)
+      if: failure()
+      uses: chrnorm/deployment-status@v2
+      with:
+        token: '${{ github.token }}'
+        state: 'failure'
+        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
