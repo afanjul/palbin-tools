@@ -324,7 +324,7 @@ export default function InvoiceGenerator() {
             <i className="bi bi-star-half fs-3 text-warning mx-1"></i>
           </div>
           
-          <p className="text-muted">4.66 / 5 promedio de 293 valoraciones</p>
+          <p className="text-muted">4.67 / 5 promedio de 293 valoraciones</p>
         </Container>
       </div>
       
