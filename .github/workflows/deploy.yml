@@ -54,18 +54,18 @@ jobs:
           pm2 restart palbin-tools
           echo "Deployment completed successfully!"
           
-    - name: Update deployment status (success)
-      if: success()
-      uses: chrnorm/deployment-status@v2
-      with:
-        token: '${{ github.token }}'
-        state: 'success'
-        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
-      
-    - name: Update deployment status (failure)
-      if: failure()
-      uses: chrnorm/deployment-status@v2
-      with:
-        token: '${{ github.token }}'
-        state: 'failure'
-        deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+    # - name: Update deployment status (success)
+    #   if: success()
+    #   uses: chrnorm/deployment-status@v2
+    #   with:
+    #     token: '${{ github.token }}'
+    #     state: 'success'
+    #     deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+    # 
+    # - name: Update deployment status (failure)
+    #   if: failure()
+    #   uses: chrnorm/deployment-status@v2
+    #   with:
+    #     token: '${{ github.token }}'
+    #     state: 'failure'
+    #     deployment-id: ${{ steps.deployment.outputs.deployment_id }}
