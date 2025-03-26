@@ -27,7 +27,8 @@ jobs:
       with:
         host: tools.palbin.com
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script_stop: true
         script: |
           cd /opt/apps/palbin-tools
           git pull origin main
