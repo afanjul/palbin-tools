@@ -25,7 +25,7 @@ jobs:
     - name: Deploy to production server
       uses: appleboy/ssh-action@master
       with:
-        host: 51.159.100.125
+        host: tools.palbin.com
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
