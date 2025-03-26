@@ -13,6 +13,7 @@ export const ModernTemplate: React.FC<InvoiceTemplateProps> = ({
   showHeaderText,
   footerText,
   showFooterText,
+  companyLogo,
 }) => {
   return (
     <div className="modern-template invoice-template p-2" style={{ background: '#f8f9fa' }}>
@@ -48,6 +49,16 @@ export const ModernTemplate: React.FC<InvoiceTemplateProps> = ({
             </div>
           </div>
           <div className="text-end" style={{ maxWidth: '40%' }}>
+            {companyLogo && (
+              <div className="mb-3 text-center">
+                <img 
+                  src={companyLogo} 
+                  alt={`Logo de ${company.name}`} 
+                  style={{ maxHeight: '80px', maxWidth: '200px' }} 
+                  className="img-fluid" 
+                />
+              </div>
+            )}
             <h3 className="mb-3">{company.name}</h3>
             <div className="text-muted">
               {company.address}<br />

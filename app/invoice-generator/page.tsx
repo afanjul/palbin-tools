@@ -6,6 +6,7 @@ import { InvoiceHeader } from "./components/InvoiceHeader";
 import { AddressForm } from "./components/AddressForm";
 import { ItemsTable } from "./components/ItemsTable";
 import { InvoicePreview } from "./components/InvoicePreview";
+import { LogoUpload } from "./components/LogoUpload";
 import { InvoiceData, Address, Item, InvoiceCalculations, Discount } from "./types";
 import { createEmptyItem, calculateInvoiceData } from "./utils";
 import { 
@@ -113,6 +114,17 @@ export default function InvoiceGenerator() {
   >("classic");
   const printRef = useRef<HTMLDivElement>(null);
 
+  const [companyLogo, setCompanyLogo] = useState<string | null>(() => {
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem("invoiceGeneratorData");
+      if (savedData) {
+        const data = JSON.parse(savedData);
+        return data.companyLogo || null;
+      }
+    }
+    return null;
+  });
+
   const handlePrint = useReactToPrint({
     contentRef: printRef,
     onAfterPrint: () => {
@@ -148,6 +160,7 @@ export default function InvoiceGenerator() {
       setShowFooterText(data.showFooterText || false);
       setHeaderText(data.headerText || "");
       setFooterText(data.footerText || "");
+      setCompanyLogo(data.companyLogo || null);
     }
   }, []);
 
@@ -177,6 +190,7 @@ export default function InvoiceGenerator() {
         showFooterText,
         headerText,
         footerText,
+        companyLogo,
       };
       localStorage.setItem("invoiceGeneratorData", JSON.stringify(dataToSave));
     }
@@ -227,6 +241,7 @@ export default function InvoiceGenerator() {
     setHeaderText("");
     setShowFooterText(false);
     setFooterText("");
+    // Do not reset the logo as it belongs to the company
   };
 
   const handleResetAll = () => {
@@ -242,6 +257,9 @@ export default function InvoiceGenerator() {
       countryCode: "ES",
       zipCode: "",
     });
+    
+    // Reset the logo when doing a full reset
+    setCompanyLogo(null);
   };
 
   const handleFullReset = () => {
@@ -278,12 +296,21 @@ export default function InvoiceGenerator() {
         </p>
         <Row className="mb-4">
           <Col md={12}>
-            <InvoiceHeader invoiceData={invoiceData} onInvoiceDataChange={setInvoiceData} />
+            <InvoiceHeader 
+              invoiceData={invoiceData} 
+              onInvoiceDataChange={setInvoiceData} 
+              logo={companyLogo}
+              onLogoChange={setCompanyLogo}
+            />
           </Col>
         </Row>
         <Row className="mb-4">
           <Col md={6}>
-            <AddressForm title="Datos del Emisor" address={company} onAddressChange={setCompany} />
+            <AddressForm 
+              title="Datos del Emisor" 
+              address={company} 
+              onAddressChange={setCompany} 
+            />
           </Col>
           <Col md={6}>
             <AddressForm title="Datos del Receptor" address={customer} onAddressChange={setCustomer} />
@@ -308,7 +335,7 @@ export default function InvoiceGenerator() {
             Generar factura
           </Button>
         </div>
-        <InvoicePreview show={showTemplateModal} onHide={() => setShowTemplateModal(false)} onPrint={handlePrint} selectedTemplate={selectedTemplate} onTemplateChange={setSelectedTemplate} invoiceData={invoiceData} company={company} customer={customer} items={items} showLineDiscounts={showLineDiscounts} showGlobalDiscount={showGlobalDiscount} headerText={headerText} showHeaderText={showHeaderText} footerText={footerText} showFooterText={showFooterText} calculations={calculations} printRef={printRef} />
+        <InvoicePreview show={showTemplateModal} onHide={() => setShowTemplateModal(false)} onPrint={handlePrint} selectedTemplate={selectedTemplate} onTemplateChange={setSelectedTemplate} invoiceData={invoiceData} company={company} customer={customer} items={items} showLineDiscounts={showLineDiscounts} showGlobalDiscount={showGlobalDiscount} headerText={headerText} showHeaderText={showHeaderText} footerText={footerText} showFooterText={showFooterText} calculations={calculations} printRef={printRef} companyLogo={companyLogo} />
       </Container>
 
       {/* Sección de reviews - separador */}
@@ -355,6 +382,18 @@ export default function InvoiceGenerator() {
                   </div>
                   <h5 className="card-title">Múltiples Plantillas</h5>
                   <p className="card-text">Selección entre diferentes diseños de plantillas para adaptarse a tus necesidades comerciales.</p>
+                </div>
+              </div>
+            </Col>
+            
+            <Col>
+              <div className="card h-100 border-0 shadow-sm">
+                <div className="card-body text-center">
+                  <div className="feature-icon mb-3">
+                    <i className="bi bi-images fs-1 text-primary"></i>
+                  </div>
+                  <h5 className="card-title">Añade tu Logo</h5>
+                  <p className="card-text">Incorpora fácilmente el logotipo de tu empresa para dar un aspecto más profesional a tus facturas.</p>
                 </div>
               </div>
             </Col>
@@ -414,7 +453,7 @@ export default function InvoiceGenerator() {
                   <div className="feature-icon mb-3">
                     <i className="bi bi-people fs-1 text-primary"></i>
                   </div>
-                  <h5 className="card-title">Reutiliza información de clientes</h5>
+                  <h5 className="card-title">Gestión de múltiples clientes</h5>
                   <p className="card-text">Almacena y gestiona información de tus clientes para futuras facturas.</p>
                 </div>
               </div>

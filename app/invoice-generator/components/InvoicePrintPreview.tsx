@@ -6,6 +6,7 @@ import { InvoiceTemplateProps } from '../templates/types';
 
 interface PrintPreviewProps extends InvoiceTemplateProps {
   template: 'classic' | 'modern' | 'minimalist';
+  companyLogo?: string | null;
 }
 
 export const InvoicePrintPreview: React.FC<PrintPreviewProps> = (props) => {

@@ -13,6 +13,7 @@ export const ClassicTemplate: React.FC<InvoiceTemplateProps> = ({
   showHeaderText,
   footerText,
   showFooterText,
+  companyLogo,
 }) => {
   return (
     <div className="classic-template invoice-template p-4">
@@ -35,6 +36,15 @@ export const ClassicTemplate: React.FC<InvoiceTemplateProps> = ({
           </div>
         </div>
         <div className="text-end">
+          {companyLogo && (
+            <div className="mb-3">
+              <img 
+                src={companyLogo} 
+                alt={`Logo de ${company.name}`} 
+                style={{ maxHeight: '80px', maxWidth: '200px' }} 
+              />
+            </div>
+          )}
           <h3>{company.name}</h3>
           <p className="mb-0">
             {company.address}<br />

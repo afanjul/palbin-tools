@@ -55,4 +55,5 @@ export interface InvoiceTemplateProps {
   showHeaderText?: boolean;
   footerText?: string;
   showFooterText?: boolean;
+  companyLogo?: string | null;
 }

@@ -1,16 +1,29 @@
 import { Form, Row, Col, Card } from 'react-bootstrap';
 import { InvoiceData } from '../types';
+import { LogoUpload } from './LogoUpload';
 
 interface InvoiceHeaderProps {
   invoiceData: InvoiceData;
   onInvoiceDataChange: (data: InvoiceData) => void;
+  logo?: string | null;
+  onLogoChange?: (logo: string | null) => void;
 }
 
-export function InvoiceHeader({ invoiceData, onInvoiceDataChange }: InvoiceHeaderProps) {
+export function InvoiceHeader({ 
+  invoiceData, 
+  onInvoiceDataChange,
+  logo,
+  onLogoChange
+}: InvoiceHeaderProps) {
   return (
     <Card className="hover-card">
       <Card.Body>
-        <h5 className="mb-3">Datos de la Factura</h5>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="mb-0">Datos de la Factura</h5>
+          {logo !== undefined && onLogoChange && (
+            <LogoUpload logo={logo} onLogoChange={onLogoChange} />
+          )}
+        </div>
         <Row>
           <Col md={2}>
             <Form.Floating className="mb-3">

@@ -13,6 +13,7 @@ export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = ({
   showHeaderText,
   footerText,
   showFooterText,
+  companyLogo,
 }) => {
   return (
     <div className="minimalist-template invoice-template py-5" style={{ 
@@ -54,6 +55,19 @@ export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = ({
         </div>
 
         <div style={{ textAlign: 'right', color: '#111827' }}>
+          {companyLogo && (
+            <div style={{ marginBottom: '1rem', textAlign: 'right' }}>
+              <img 
+                src={companyLogo} 
+                alt={`Logo de ${company.name}`} 
+                style={{ 
+                  maxHeight: '60px', 
+                  maxWidth: '180px',
+                  display: 'inline-block' 
+                }} 
+              />
+            </div>
+          )}
           <div style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
             {company.name}
           </div>

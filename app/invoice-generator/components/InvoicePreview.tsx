@@ -20,6 +20,7 @@ interface InvoicePreviewProps {
   showFooterText: boolean;
   calculations: InvoiceCalculations;
   printRef: React.RefObject<HTMLDivElement>;
+  companyLogo: string | null;
 }
 
 export function InvoicePreview({
@@ -40,6 +41,7 @@ export function InvoicePreview({
   showFooterText,
   calculations,
   printRef,
+  companyLogo,
 }: InvoicePreviewProps) {
   return (
     <Modal
@@ -100,6 +102,7 @@ export function InvoicePreview({
             footerText={footerText}
             showFooterText={showFooterText}
             calculations={calculations}
+            companyLogo={companyLogo}
           />
         </div>
       </Modal.Body>
