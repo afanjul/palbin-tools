@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     
     steps:
     - uses: actions/checkout@v3
@@ -23,16 +23,14 @@ jobs:
       run: npm run build
       
     - name: Deploy to production server
-      shell: bash
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        script_stop: true
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          source /home/siokia/.bashrc
           cd /opt/apps/palbin-tools
           git pull origin main
           npm ci --production
           npm run build
-          pm2 restart palbin-tools 
+          pm2 restart palbin-tools
