@@ -25,14 +25,15 @@ jobs:
     - name: Deploy to production server
       uses: appleboy/ssh-action@master
       with:
-        host: tools.palbin.com
+        host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script_stop: true
         script: |
-          source ~/.bashrc
+          #!/bin/bash
+          source /home/siokia/.bashrc
           cd /opt/apps/palbin-tools
-          /usr/bin/git pull origin main
-          /home/siokia/.nvm/versions/node/v23.10.0/bin/npm ci
-          /home/siokia/.nvm/versions/node/v23.10.0/bin/npm run build
-          /home/siokia/.nvm/versions/node/v23.10.0/bin/pm2 restart palbin-tools 
+          git pull origin main
+          npm ci
+          npm run build
+          pm2 restart palbin-tools 
