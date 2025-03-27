@@ -4,6 +4,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { tools } from './data/tools'
 
+
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 export default function Home() {
   return (
     <Container>
@@ -14,7 +17,7 @@ export default function Home() {
             <Link href={tool.link} className="text-decoration-none">
               <Card className="h-100 shadow-sm hover-shadow">
                 <Image 
-                  src={tool.image}
+                  src={basePath+tool.image}
                   alt={tool.title}
                   width={500}
                   height={200}

@@ -1,5 +1,7 @@
 import React from 'react';
 import { InvoiceTemplateProps } from './types';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export const ModernTemplate: React.FC<InvoiceTemplateProps> = ({
   invoiceData,
@@ -51,10 +53,12 @@ export const ModernTemplate: React.FC<InvoiceTemplateProps> = ({
           <div className="text-end" style={{ maxWidth: '40%' }}>
             {companyLogo && (
               <div className="mb-3 text-center">
-                <img 
+                <Image 
                   src={companyLogo} 
                   alt={`Logo de ${company.name}`} 
-                  style={{ maxHeight: '80px', maxWidth: '200px' }} 
+                  width={200}
+                  height={80}
+                  style={{ maxHeight: '80px', maxWidth: '200px', objectFit: 'contain' }} 
                   className="img-fluid" 
                 />
               </div>

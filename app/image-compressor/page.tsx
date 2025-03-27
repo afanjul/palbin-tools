@@ -13,6 +13,7 @@ interface ResizeOptions {
 }
 
 export default function ImageCompressor() {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
   const [originalImage, setOriginalImage] = useState<string | null>(null)
   const [compressedImage, setCompressedImage] = useState<string | null>(null)
   const [compressedImageUrl, setCompressedImageUrl] = useState<string | null>(null)
@@ -34,7 +35,7 @@ export default function ImageCompressor() {
       formData.append('apiKey', apiKey)
       formData.append('originalFilename', file.name)
       
-      const response = await fetch('/api/compress', {
+      const response = await fetch(`${basePath}/api/compress`, {
         method: 'POST',
         body: formData
       })
@@ -54,7 +55,7 @@ export default function ImageCompressor() {
     } finally {
       setIsCompressing(false)
     }
-  }, [apiKey])
+  }, [basePath, apiKey])
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -97,7 +98,7 @@ export default function ImageCompressor() {
       formData.append('resize', JSON.stringify(resizeOptions))
 
       // Call resize endpoint
-      const response = await fetch('/api/resize', {
+      const response = await fetch(`${basePath}/api/resize`, {
         method: 'POST',
         body: formData
       })

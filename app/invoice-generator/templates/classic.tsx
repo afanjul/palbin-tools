@@ -1,5 +1,6 @@
 import React from 'react';
 import { InvoiceTemplateProps } from './types';
+import Image from 'next/image';
 
 export const ClassicTemplate: React.FC<InvoiceTemplateProps> = ({
   invoiceData,
@@ -23,7 +24,7 @@ export const ClassicTemplate: React.FC<InvoiceTemplateProps> = ({
         </div>
       )}
 
-      <div className="d-flex justify-content-between mb-4">
+      <div className="d-flex justify-content-between align-items-start mb-5">
         <div>
           <h2 className="mb-4">FACTURA</h2>
           <div>
@@ -38,10 +39,12 @@ export const ClassicTemplate: React.FC<InvoiceTemplateProps> = ({
         <div className="text-end">
           {companyLogo && (
             <div className="mb-3">
-              <img 
+              <Image 
                 src={companyLogo} 
                 alt={`Logo de ${company.name}`} 
-                style={{ maxHeight: '80px', maxWidth: '200px' }} 
+                width={200}
+                height={80}
+                style={{ maxHeight: '80px', maxWidth: '200px', objectFit: 'contain' }} 
               />
             </div>
           )}

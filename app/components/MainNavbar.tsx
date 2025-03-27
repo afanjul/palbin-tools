@@ -6,6 +6,7 @@ import { Navbar, Nav, Container, Button, Dropdown } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
 
 const baseUrl = "https://www.palbin.com/es";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 export default function MainNavbar() {
   const [isScrolling, setIsScrolling] = useState(false);
@@ -27,7 +28,7 @@ export default function MainNavbar() {
         <Navbar bg="light" expand="lg">
           <Link href="/" passHref legacyBehavior>
             <Navbar.Brand>
-              <Image src="/images/palbin-logo.svg" alt="Logo" width={120} height={40} />
+              <Image src={`${basePath}/images/palbin-logo.svg`} alt="Logo" width={120} height={40} />
             </Navbar.Brand>
           </Link>
 
@@ -39,7 +40,6 @@ export default function MainNavbar() {
           >
             Crear tienda
           </Button>
-
 
           <Navbar.Toggle aria-controls="navbar" />
           
@@ -89,11 +89,9 @@ export default function MainNavbar() {
             </Nav>
 
             <Nav>
-
-                <Button variant="primary" size="sm" className="d-none d-lg-inline mx-2 text-uppercase" href={`${baseUrl}/crear-tienda-online`}>
-                Crear tienda
-                </Button>
-
+              <Button variant="primary" size="sm" className="d-none d-lg-inline mx-2 text-uppercase" href={`${baseUrl}/crear-tienda-online`}>
+              Crear tienda
+              </Button>
               <Nav.Link href="tel:901001814" className="d-none d-lg-block ms-3 text-uppercase">
                 <i className="bi bi-telephone"></i> 901 001 814
               </Nav.Link>

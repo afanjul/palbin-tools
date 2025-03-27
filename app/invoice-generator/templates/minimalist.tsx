@@ -1,5 +1,6 @@
 import React from 'react';
 import { InvoiceTemplateProps } from './types';
+import Image from 'next/image';
 
 export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = ({
   invoiceData,
@@ -57,13 +58,16 @@ export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = ({
         <div style={{ textAlign: 'right', color: '#111827' }}>
           {companyLogo && (
             <div style={{ marginBottom: '1rem', textAlign: 'right' }}>
-              <img 
+              <Image 
                 src={companyLogo} 
                 alt={`Logo de ${company.name}`} 
+                width={180}
+                height={60}
                 style={{ 
                   maxHeight: '60px', 
                   maxWidth: '180px',
-                  display: 'inline-block' 
+                  display: 'inline-block',
+                  objectFit: 'contain'
                 }} 
               />
             </div>
