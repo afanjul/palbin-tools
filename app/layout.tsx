@@ -18,8 +18,6 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" />
-        {/* Next.js will handle the basePath for scripts automatically */}
-        <script src="/scripts/script.js" defer></script>
       </head>
       <body className="">
         <RootLayoutClient>{children}</RootLayoutClient>
