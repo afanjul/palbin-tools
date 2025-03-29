@@ -183,14 +183,14 @@ export const MinimalistTemplate: React.FC<InvoiceTemplateProps> = ({
 
               return (
                 <tr key={item.id} className={index % 2 === 0 ? 'bg-gray-50/50' : ''}>
-                  <td className="p-4">{item.concept}</td>
-                  <td className="p-4">{item.quantity}</td>
-                  <td className="p-4">{item.price.toFixed(2)}€</td>
-                  <td className="p-4">{item.taxAmount}%</td>
+                  <td className="p-2">{item.concept}</td>
+                  <td className="p-2">{item.quantity}</td>
+                  <td className="p-2">{item.price.toFixed(2)}€</td>
+                  <td className="p-2">{item.taxAmount}%</td>
                   {showLineDiscounts && (
-                    <td className="p-4">{item.discount > 0 ? `${item.discount}%` : '-'}</td>
+                    <td className="p-2">{item.discount > 0 ? `${item.discount}%` : '-'}</td>
                   )}
-                  <td className="p-4 text-right font-medium">{lineTotal.toFixed(2)}€</td>
+                  <td className="p-2 text-right font-medium">{lineTotal.toFixed(2)}€</td>
                 </tr>
               );
             })}
