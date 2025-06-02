@@ -21,7 +21,7 @@ export default function UrlManipulator() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const handleOptionChange = (option: keyof UrlManipulationOptions, value: any) => {
+  const handleOptionChange = (option: keyof UrlManipulationOptions, value: boolean | string | undefined) => {
     setOptions(prev => ({
       ...prev,
       [option]: value

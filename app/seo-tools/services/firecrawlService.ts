@@ -10,7 +10,7 @@ interface ScrapedContent {
   html: string;
   title: string;
   url: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface BatchScrapeResult {
@@ -21,8 +21,8 @@ interface BatchScrapeResult {
 
 interface ExtractedInfo {
   url: string;
-  data?: Record<string, any>;
-  [key: string]: any;
+  data?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 // Schema por defecto para extracción de contactos usando Zod
@@ -155,7 +155,7 @@ class FirecrawlService {
   async extractContactInfo(
     urls: string[], 
     prompt: string = DEFAULT_EXTRACTION_PROMPT,
-    customSchema: any = DEFAULT_EXTRACTION_SCHEMA,
+    customSchema: Record<string, unknown> | z.ZodSchema = DEFAULT_EXTRACTION_SCHEMA,
     enableWebSearch: boolean = false
   ): Promise<ExtractedInfo[]> {
     try {

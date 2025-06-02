@@ -39,12 +39,12 @@ export interface UrlFilterOutput {
 export interface ContactExtractorInput {
   urls: string[];
   prompt: string;
-  schema: any;
+  schema: Record<string, unknown>;
   enableWebSearch: boolean;
 }
 
 export interface ContactExtractorOutput {
-  extractedInfo: any[];
+  extractedInfo: Record<string, unknown>[];
 }
 
 export interface BlogGeneratorInput {
@@ -263,3 +263,145 @@ class ApiService {
 // Crear una única instancia del servicio para reutilizar
 const apiService = new ApiService();
 export default apiService;
+
+// Export named functions for easier imports
+export const filterUrls = async (
+  urls: string[], 
+  includeKeywords: string[], 
+  excludeKeywords: string[]
+): Promise<UrlFilterResult> => {
+  // Process the URLs with include and exclude filters
+  try {
+    const filteredUrls: string[] = [];
+    const errors: string[] = [];
+    
+    for (const url of urls) {
+      try {
+        // For now, we'll do a simple implementation
+        // In a real implementation, you'd scrape the content and filter
+        let shouldInclude = true;
+        
+        // Simple URL-based filtering (placeholder logic)
+        if (includeKeywords.length > 0) {
+          shouldInclude = includeKeywords.some(keyword => 
+            url.toLowerCase().includes(keyword.toLowerCase())
+          );
+        }
+        
+        if (shouldInclude && excludeKeywords.length > 0) {
+          shouldInclude = !excludeKeywords.some(keyword => 
+            url.toLowerCase().includes(keyword.toLowerCase())
+          );
+        }
+        
+        if (shouldInclude) {
+          filteredUrls.push(url);
+        }
+      } catch (error) {
+        errors.push(`Error processing ${url}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+    
+    return {
+      success: true,
+      filtered_urls: filteredUrls,
+      errors
+    };
+  } catch (error) {
+    return {
+      success: false,
+      filtered_urls: [],
+      errors: [error instanceof Error ? error.message : 'Unknown error']
+    };
+  }
+};
+
+export const manipulateUrls = async (
+  urls: string[], 
+  options: UrlManipulationOptions
+): Promise<UrlManipulationResult> => {
+  try {
+    let processedUrls = [...urls];
+    const errors: string[] = [];
+    
+    // Remove duplicates if requested
+    if (options.removeDuplicates) {
+      processedUrls = [...new Set(processedUrls)];
+    }
+    
+    // Process each URL
+    const manipulatedUrls = processedUrls.map(url => {
+      try {
+        let processedUrl = url.trim();
+        
+        if (!processedUrl) return processedUrl;
+        
+        // Add protocol if missing
+        if (!processedUrl.match(/^https?:\/\//)) {
+          processedUrl = 'https://' + processedUrl;
+        }
+        
+        const urlObj = new URL(processedUrl);
+        
+        // Force HTTPS
+        if (options.forceHttps) {
+          urlObj.protocol = 'https:';
+        }
+        
+        // Remove www
+        if (options.removeWww) {
+          urlObj.hostname = urlObj.hostname.replace(/^www\./, '');
+        }
+        
+        // Remove parameters
+        if (options.removeParams) {
+          urlObj.search = '';
+          urlObj.hash = '';
+        }
+        
+        // Handle trailing slash
+        if (options.forceTrailingSlash && !urlObj.pathname.endsWith('/')) {
+          urlObj.pathname += '/';
+        }
+        
+        // Extract specific component if requested
+        if (options.extractComponent) {
+          switch (options.extractComponent) {
+            case 'domain':
+              return urlObj.hostname;
+            case 'path':
+              return urlObj.pathname;
+            case 'query':
+              return urlObj.search;
+            case 'subdirs':
+              return urlObj.pathname.split('/').slice(1, -1).join('/');
+            default:
+              break;
+          }
+        }
+        
+        return urlObj.toString();
+      } catch (error) {
+        errors.push(`Invalid URL: ${url}`);
+        return url; // Return original URL if processing fails
+      }
+    });
+    
+    // Sort if requested
+    if (options.sortUrls) {
+      manipulatedUrls.sort();
+    }
+    
+    return {
+      success: true,
+      urls: manipulatedUrls,
+      errors
+    };
+  } catch (error) {
+    return {
+      success: false,
+      urls: [],
+      errors: [error instanceof Error ? error.message : 'Unknown error']
+    };
+  }
+};

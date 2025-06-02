@@ -50,7 +50,7 @@ export interface ContactExtractionResult {
 
 export interface ContactSingleResult {
   url: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Tipos para el filtro de URLs

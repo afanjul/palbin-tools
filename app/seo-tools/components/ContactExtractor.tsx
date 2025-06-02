@@ -9,7 +9,7 @@ import { saveAs } from 'file-saver';
 // Tipo para los resultados de extracción
 interface ExtractedInfo {
   url: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export default function ContactExtractor() {
@@ -104,7 +104,7 @@ export default function ContactExtractor() {
       setExtractedInfo([]);
       
       // Parsear el esquema
-      let schema: any;
+      let schema: Record<string, unknown>;
       try {
         schema = JSON.parse(schemaInput);
       } catch (error) {
@@ -122,7 +122,15 @@ export default function ContactExtractor() {
       const response = await apiService.extractContactInfo(input);
       
       // Si la respuesta es exitosa, establecemos los resultados
-      setExtractedInfo(response.extractedInfo);
+      // Ensure each item has a url property
+      const processedInfo: ExtractedInfo[] = response.extractedInfo.map((item, index) => ({
+        url: (item.url as string) || urlLines[index] || 'Unknown URL',
+        ...Object.fromEntries(
+          Object.entries(item).filter(([key]) => key !== 'url')
+        )
+      }));
+      
+      setExtractedInfo(processedInfo);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Error desconocido');
     } finally {
@@ -400,7 +408,7 @@ export default function ContactExtractor() {
                         </a>
                       </td>
                       {tableColumns.map(column => (
-                        <td key={column}>{item[column] || ''}</td>
+                        <td key={column}>{String(item[column] || '')}</td>
                       ))}
                     </tr>
                   ))}
