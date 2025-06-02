@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.7",
+    "@mendable/firecrawl-js": "^1.21.0",
     "@openrouter/ai-sdk-provider": "^0.0.6",
     "@react-pdf/renderer": "^3.3.4",
     "@types/file-saver": "^2.0.7",
@@ -35,7 +36,8 @@
     "react-dropzone": "^14.3.5",
     "react-to-print": "^3.0.2",
     "sass": "^1.82.0",
-    "zod": "^3.23.8"
+    "serpapi": "^2.1.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/iso-3166-2": "^1.0.3",

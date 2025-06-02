@@ -23,7 +23,7 @@ export const tools: Tool[] = [
   {
     id: 'instagram-grid-maker',
     title: 'Instagram Grid Maker',
-    description: 'Create perfect carousel posts and grid layouts for your Instagram profile. Split any image into multiple slides or grid pieces with just a few clicks.',
+    description: 'Crea publicaciones de carrusel y diseños de cuadrícula perfectos para tu perfil de Instagram. Divide cualquier imagen en múltiples diapositivas o piezas de cuadrícula con solo unos pocos clics.',
     image: '/images/tools/instagram-grid-maker.png',
     link: '/instagram-grid-maker',
     buttonText: 'Create Grid',
@@ -33,7 +33,7 @@ export const tools: Tool[] = [
   {
     id: 'image-compressor',
     title: 'Image Compressor',
-    description: 'Compress and optimize your images without losing quality. Perfect for web and social media use.',
+    description: 'Comprime y optimiza tus imágenes sin perder calidad. Perfecto para uso web y en redes sociales.',
     image: '/images/tools/image-compressor.png',
     link: '/image-compressor',
     buttonText: 'Compress Images',
@@ -43,11 +43,21 @@ export const tools: Tool[] = [
   {
     id: 'thread-generator',
     title: 'Thread Generator',
-    description: 'Transform your long-form content into engaging Twitter/X threads. AI-powered tool that maintains your message while optimizing for engagement.',
+    description: 'Transforma tu contenido extenso en atractivos hilos de Twitter/X. Herramienta impulsada por IA que mantiene tu mensaje mientras optimiza la participación.',
     image: '/images/tools/thread-generator.png',
     link: '/thread-generator',
     buttonText: 'Create Thread',
     buttonIcon: 'bi-chat-square-text',
     buttonVariant: 'danger'
+  },
+  {
+    id: 'seo-tools',
+    title: 'SEO Tools',
+    description: 'Conjunto de herramientas para SEO y marketing de contenidos: extractor de URLs de SERPs, generador de artículos, extractor de contactos, filtrado y manipulación de URLs.',
+    image: '/images/tools/seo-tools.png',
+    link: '/seo-tools',
+    buttonText: 'Usar Herramientas SEO',
+    buttonIcon: 'bi-search',
+    buttonVariant: 'success'
   }
 ];
